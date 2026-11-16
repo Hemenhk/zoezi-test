@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 // The only file allowed to read the real clock (CLAUDE.md rule 6).
 export const PORT = Number(process.env.PORT ?? 3001);
+export const HOST = process.env.HOST || '127.0.0.1';
 export const DATA_PATH = new URL('../../data.json', import.meta.url).pathname;
 export const PERSIST_PATH = new URL('../../.data/bookings.local.json', import.meta.url).pathname;
 

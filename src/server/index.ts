@@ -1,10 +1,10 @@
 import { buildApp, defaultOptions } from './app';
-import { PORT } from './config';
+import { HOST, PORT } from './config';
 
 const app = buildApp({ logger: true, ...defaultOptions });
 
 try {
-  await app.listen({ port: PORT, host: '0.0.0.0' });
+  await app.listen({ port: PORT, host: HOST });
 } catch (err) {
   app.log.error(err);
   process.exit(1);
