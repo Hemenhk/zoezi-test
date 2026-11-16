@@ -4,13 +4,13 @@
 
 **Timebox: 2 hours.** Start a timer after the first commit.
 
-| Phase | Tasks | Budget | Running total |
-| --- | --- | --- | --- |
-| 0. Setup | 0.1 | 10 min | 0:10 |
-| 1. Domain | 1.1, 1.2, 1.3 | 40 min | 0:50 |
-| 2. API | 2.1, 2.2 | 20 min | 1:10 |
-| 3. UI | 3.1, 3.2, 3.3, 3.4 | 35 min | 1:45 |
-| 4. Ship | 4.1, 4.2 | 15 min | 2:00 |
+| Phase     | Tasks              | Budget | Running total |
+| --------- | ------------------ | ------ | ------------- |
+| 0. Setup  | 0.1                | 10 min | 0:10          |
+| 1. Domain | 1.1, 1.2, 1.3      | 40 min | 0:50          |
+| 2. API    | 2.1, 2.2           | 20 min | 1:10          |
+| 3. UI     | 3.1, 3.2, 3.3, 3.4 | 35 min | 1:45          |
+| 4. Ship   | 4.1, 4.2           | 15 min | 2:00          |
 
 **If you're behind:** at 1:15, skip 3.4 entirely. At 1:30, also drop the staff filter and the sort control from 3.2. Phases 1 and 2 are never cut, and neither are their tests. Write down whatever you cut in `DECISIONS.md`.
 
@@ -32,28 +32,28 @@
 
 These are the defaults. Change any of them before starting, not during. `DECISIONS.md` is condensed from this table and the quirks table below.
 
-| # | Decision | Why |
-| --- | --- | --- |
-| D1 | HTTP JSON API (Fastify) plus a Vue client, in one npm package; Vite proxies `/api` in development. | HTTP is easy to test with `inject()` and curl. A single package avoids the friction of workspaces in a 2-hour task. |
-| D2 | `data.json` is read-only and loaded into memory. New bookings go into memory and `.data/bookings.local.json`. | It counts as production data and the brief allows file storage. SQLite would need a native build, which risks "runs straight after clone". |
-| D3 | Every venue uses `Europe/Stockholm`. The API returns ISO 8601 with an offset and no milliseconds. The UI always shows venue-local time. | The data has no zone field and every coordinate is in Stockholm. A customer cares about the time at the venue, not in their browser. |
-| D4 | Slot starts sit on a 15-minute grid aligned to the quarter hour, and the full duration must fit. | This is how consumer booking UIs usually work. Stepping by duration would produce odd start times such as 08:50 and 09:40. |
-| D5 | Bookable time = venue opening ∩ staff working hours − staff breaks − blocking bookings. A missing day and a `null` day both mean closed. | The staff and venue hours disagree (Q6). The venue is the outer limit. |
-| D6 | Every booking blocks except those with status `cancelled`, and unknown statuses also block. | Failing safe: a phantom-blocked slot costs a little revenue, while a double booking costs a customer. |
-| D7 | Slots that start at or before `now` are excluded. There is no minimum notice period. | The brief doesn't ask for one, so we keep it simple. |
-| D8 | `from` and `to` are local calendar dates, inclusive, with a maximum span of 14 days. A `from` in the past is clamped to today, and a `to` in the past is a 400. | This limits the work per request and treats a stale URL kindly. |
-| D9 | Matching uses service names only, lowercased with diacritics stripped (NFD). Every query token must be a substring of the name or of a synonym. The query must be at least 2 characters. There's a small synonym table: massage ↔ massör ↔ massös, klippning ↔ frisör ↔ haircut. | Swedish compounds ("Sportmassage", "Djupvävnadsmassage") need substring matching, and "Massör - 50 min" should come up for "massage". A real search index would replace the synonym table (see 100x). |
-| D10 | Distance uses haversine with R = 6371 km. The default radius is 25 km and the maximum 100 km. Venues without a position are excluded and a warning is logged. | The brief requires distance in every result, so a venue without a position can't be ranked honestly. |
-| D11 | Results are sorted by distance, then by service id. The client can re-sort by earliest time or price. | Distance is what "near me" means, and the result sets are small enough to sort on the client. |
-| D12 | A result with no free slot in the range is still returned, with `nextAvailable: null`. | The customer learns the venue exists but is fully booked, rather than thinking there's nothing nearby. |
-| D13 | Each slot lists the `staffIds` that can take it. With `staffId: null`, the service assigns whoever has the fewest bookings that day (lowest id on a tie). | "Any staff" is the most common choice. The assignment is deterministic, which makes it testable. |
-| D14 | The booking body is `{ serviceId, staffId \| null, start, customerName }`, and the venue is derived from the service. | Fewer fields means fewer ways to send an inconsistent request. Service ids are unique across venues. |
-| D15 | The check, insert and persist run synchronously in one Node process. | That is enough to prevent double booking here. At scale, a database constraint does this job (see 100x). |
-| D16 | An optional `Idempotency-Key` header. The same key with the same body returns the original booking (200). The same key with a different body is a 422. | It protects against double-clicks and retries. |
-| D17 | `customerName` is trimmed, 2 to 80 characters, any Unicode letters, no control characters. No other personal data is collected. | Names like "Åsa Öberg-Lind" or "O'Neil" must pass, and we collect only what the brief asks for. |
-| D18 | The `NOW` env var pins the clock. The tests pin it to `2026-10-22T08:00:00+02:00`. | Every existing booking is in October 2026, which is already in the past. Without this, nobody could see them blocking slots. |
-| D19 | The UI is in English, prices use Swedish formatting ("795 kr"), and dates look like "Fri 23 Oct, 09:00" in 24-hour time. | The brief and the reviewers are in English, while the data and the users are Swedish. |
-| D20 | vee-validate is pinned to 5.0.0-beta.1, because the stable 4.15.1 cannot take a Zod 4 schema (its Zod adapter needs Zod 3). Fallback: 4.15.1 with a small hand-written adapter around `safeParse`. | v5 accepts Standard Schema libraries directly, so the client forms can reuse the shared Zod 4 schemas. The cost is depending on a beta release. |
+| #   | Decision                                                                                                                                                                                                                                                                         | Why                                                                                                                                                                                                   |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | HTTP JSON API (Fastify) plus a Vue client, in one npm package; Vite proxies `/api` in development.                                                                                                                                                                               | HTTP is easy to test with `inject()` and curl. A single package avoids the friction of workspaces in a 2-hour task.                                                                                   |
+| D2  | `data.json` is read-only and loaded into memory. New bookings go into memory and `.data/bookings.local.json`.                                                                                                                                                                    | It counts as production data and the brief allows file storage. SQLite would need a native build, which risks "runs straight after clone".                                                            |
+| D3  | Every venue uses `Europe/Stockholm`. The API returns ISO 8601 with an offset and no milliseconds. The UI always shows venue-local time.                                                                                                                                          | The data has no zone field and every coordinate is in Stockholm. A customer cares about the time at the venue, not in their browser.                                                                  |
+| D4  | Slot starts sit on a 15-minute grid aligned to the quarter hour, and the full duration must fit.                                                                                                                                                                                 | This is how consumer booking UIs usually work. Stepping by duration would produce odd start times such as 08:50 and 09:40.                                                                            |
+| D5  | Bookable time = venue opening ∩ staff working hours − staff breaks − blocking bookings. A missing day and a `null` day both mean closed.                                                                                                                                         | The staff and venue hours disagree (Q6). The venue is the outer limit.                                                                                                                                |
+| D6  | Every booking blocks except those with status `cancelled`, and unknown statuses also block.                                                                                                                                                                                      | Failing safe: a phantom-blocked slot costs a little revenue, while a double booking costs a customer.                                                                                                 |
+| D7  | Slots that start at or before `now` are excluded. There is no minimum notice period.                                                                                                                                                                                             | The brief doesn't ask for one, so we keep it simple.                                                                                                                                                  |
+| D8  | `from` and `to` are local calendar dates, inclusive, with a maximum span of 14 days. A `from` in the past is clamped to today, and a `to` in the past is a 400.                                                                                                                  | This limits the work per request and treats a stale URL kindly.                                                                                                                                       |
+| D9  | Matching uses service names only, lowercased with diacritics stripped (NFD). Every query token must be a substring of the name or of a synonym. The query must be at least 2 characters. There's a small synonym table: massage ↔ massör ↔ massös, klippning ↔ frisör ↔ haircut. | Swedish compounds ("Sportmassage", "Djupvävnadsmassage") need substring matching, and "Massör - 50 min" should come up for "massage". A real search index would replace the synonym table (see 100x). |
+| D10 | Distance uses haversine with R = 6371 km. The default radius is 25 km and the maximum 100 km. Venues without a position are excluded and a warning is logged.                                                                                                                    | The brief requires distance in every result, so a venue without a position can't be ranked honestly.                                                                                                  |
+| D11 | Results are sorted by distance, then by service id. The client can re-sort by earliest time or price.                                                                                                                                                                            | Distance is what "near me" means, and the result sets are small enough to sort on the client.                                                                                                         |
+| D12 | A result with no free slot in the range is still returned, with `nextAvailable: null`.                                                                                                                                                                                           | The customer learns the venue exists but is fully booked, rather than thinking there's nothing nearby.                                                                                                |
+| D13 | Each slot lists the `staffIds` that can take it. With `staffId: null`, the service assigns whoever has the fewest bookings that day (lowest id on a tie).                                                                                                                        | "Any staff" is the most common choice. The assignment is deterministic, which makes it testable.                                                                                                      |
+| D14 | The booking body is `{ serviceId, staffId \| null, start, customerName }`, and the venue is derived from the service.                                                                                                                                                            | Fewer fields means fewer ways to send an inconsistent request. Service ids are unique across venues.                                                                                                  |
+| D15 | The check, insert and persist run synchronously in one Node process.                                                                                                                                                                                                             | That is enough to prevent double booking here. At scale, a database constraint does this job (see 100x).                                                                                              |
+| D16 | An optional `Idempotency-Key` header. The same key with the same body returns the original booking (200). The same key with a different body is a 422.                                                                                                                           | It protects against double-clicks and retries.                                                                                                                                                        |
+| D17 | `customerName` is trimmed, 2 to 80 characters, any Unicode letters, no control characters. No other personal data is collected.                                                                                                                                                  | Names like "Åsa Öberg-Lind" or "O'Neil" must pass, and we collect only what the brief asks for.                                                                                                       |
+| D18 | The `NOW` env var pins the clock. The tests pin it to `2026-10-22T08:00:00+02:00`.                                                                                                                                                                                               | Every existing booking is in October 2026, which is already in the past. Without this, nobody could see them blocking slots.                                                                          |
+| D19 | The UI is in English, prices use Swedish formatting ("795 kr"), and dates look like "Fri 23 Oct, 09:00" in 24-hour time.                                                                                                                                                         | The brief and the reviewers are in English, while the data and the users are Swedish.                                                                                                                 |
+| D20 | vee-validate is pinned to 5.0.0-beta.1, because the stable 4.15.1 cannot take a Zod 4 schema (its Zod adapter needs Zod 3). Fallback: 4.15.1 with a small hand-written adapter around `safeParse`.                                                                               | v5 accepts Standard Schema libraries directly, so the client forms can reuse the shared Zod 4 schemas. The cost is depending on a beta release.                                                       |
 
 ---
 
@@ -61,19 +61,19 @@ These are the defaults. Change any of them before starting, not during. `DECISIO
 
 Each quirk gets explicit handling and, where marked, a test. Claude Code must stop and report any quirk not listed here (rule 10 in CLAUDE.md).
 
-| # | Quirk | Handling | Test |
-| --- | --- | --- | --- |
-| Q1 | Venue 4 "Studio Norr" has `position: null`. | It is excluded from search, with a startup warning (D10). | yes |
-| Q2 | Sara (2001) has overlapping confirmed bookings: b4 08:00–08:50 and b5 08:30–09:20 on 25 Oct. That's an existing double booking. | Both block, giving one blocked stretch from 08:00 to 09:20, plus a startup warning. The data is not "fixed". | yes |
-| Q3 | Anna's b2 (11:00–12:30, 23 Oct) runs into her 12:00–13:00 break. | Both the booking and the break block, and there's a warning. | yes |
-| Q4 | b3 is `cancelled`. | It doesn't block (D6). | yes |
-| Q5 | The offsets are mixed: `+02:00`, `+01:00`, and `Z` (b6). 25 Oct 2026 is the day summer time ends, which is when b4 and b5 happen. | Everything is parsed as an instant (`DateTime.fromISO(s, { setZone: true })`) and compared in milliseconds. b6 at 09:00Z is 10:00 local time. | yes |
-| Q6 | Erik works Saturdays 10:00–18:00, but venue 1 closes at 15:00 on Saturdays. | The hours are intersected (D5). | yes |
-| Q7 | Venues use `null` for closed days, while staff simply leave the day out of `workingHours`. | Both mean closed. | covered by the slot tests |
-| Q8 | Bookings have no `venueId` and no customer name. | The venue comes from `staffId`. The display name is optional internally, and new bookings carry `customerName`. | – |
-| Q9 | Service names are inconsistent: a generic "Massage" (102), "Massör - 50 min" (201) with its duration in the name, and compound words. | Substring matching plus synonyms (D9). | yes |
-| Q10 | Every existing booking is in October 2026, before today. | The clock is injectable, with `NOW` for demos (D18). | – |
-| Q11 | There's no time zone in the data. | `Europe/Stockholm` is assumed (D3). | – |
+| #   | Quirk                                                                                                                                 | Handling                                                                                                                                      | Test                      |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Q1  | Venue 4 "Studio Norr" has `position: null`.                                                                                           | It is excluded from search, with a startup warning (D10).                                                                                     | yes                       |
+| Q2  | Sara (2001) has overlapping confirmed bookings: b4 08:00–08:50 and b5 08:30–09:20 on 25 Oct. That's an existing double booking.       | Both block, giving one blocked stretch from 08:00 to 09:20, plus a startup warning. The data is not "fixed".                                  | yes                       |
+| Q3  | Anna's b2 (11:00–12:30, 23 Oct) runs into her 12:00–13:00 break.                                                                      | Both the booking and the break block, and there's a warning.                                                                                  | yes                       |
+| Q4  | b3 is `cancelled`.                                                                                                                    | It doesn't block (D6).                                                                                                                        | yes                       |
+| Q5  | The offsets are mixed: `+02:00`, `+01:00`, and `Z` (b6). 25 Oct 2026 is the day summer time ends, which is when b4 and b5 happen.     | Everything is parsed as an instant (`DateTime.fromISO(s, { setZone: true })`) and compared in milliseconds. b6 at 09:00Z is 10:00 local time. | yes                       |
+| Q6  | Erik works Saturdays 10:00–18:00, but venue 1 closes at 15:00 on Saturdays.                                                           | The hours are intersected (D5).                                                                                                               | yes                       |
+| Q7  | Venues use `null` for closed days, while staff simply leave the day out of `workingHours`.                                            | Both mean closed.                                                                                                                             | covered by the slot tests |
+| Q8  | Bookings have no `venueId` and no customer name.                                                                                      | The venue comes from `staffId`. The display name is optional internally, and new bookings carry `customerName`.                               | –                         |
+| Q9  | Service names are inconsistent: a generic "Massage" (102), "Massör - 50 min" (201) with its duration in the name, and compound words. | Substring matching plus synonyms (D9).                                                                                                        | yes                       |
+| Q10 | Every existing booking is in October 2026, before today.                                                                              | The clock is injectable, with `NOW` for demos (D18).                                                                                          | –                         |
+| Q11 | There's no time zone in the data.                                                                                                     | `Europe/Stockholm` is assumed (D3).                                                                                                           | –                         |
 
 ### Expected slots (worked out by hand; use these as test oracles)
 
@@ -82,6 +82,7 @@ These hold with the clock pinned at `2026-10-22T08:00:00+02:00`. Times are local
 **Venue 1, Fri 23 Oct (+02:00)**
 
 Service 101 (Klassisk massage, 60 min):
+
 - 09:00 [1001]
 - No slots 09:15–09:45: Anna would run into b1 at 10:00, and Erik starts at 10:00
 - 10:00–12:45 [1002]
@@ -90,26 +91,31 @@ Service 101 (Klassisk massage, 60 min):
 - Nothing after 17:00
 
 Service 102 (Massage, 45 min):
+
 - 09:15 [1001] is offered, because it ends exactly when b1 starts (back-to-back allowed)
 - 09:30 is not offered for Anna
 
 Service 103 (90 min, Anna only):
+
 - Nothing in the morning
 - 13:00–15:30 [1001]
 
 **Venue 1, Sat 24 Oct (+02:00)**
 
 Service 101, Erik only:
+
 - 10:00–14:00 [1002]
 - Nothing at 14:15 or later, because the venue closes at 15:00 (Q6)
 - 10:00 is free, because b3 is cancelled (Q4)
 
 **Venue 1, Sun 25 Oct**
+
 - No slots: the venue is closed
 
 **Venue 2, Sun 25 Oct (+01:00: the DST change day)**
 
 Service 201 (50 min):
+
 - The first slot is 09:30, because b4 and b5 block 08:00–09:20 (Q2)
 - The last slot is 19:00
 - Every `start` string ends in `+01:00`
@@ -117,6 +123,7 @@ Service 201 (50 min):
 **Venue 3, Mon 26 Oct (+01:00)**
 
 Service 301 (Herrklippning, 30 min):
+
 - 09:00–09:30 [3001]
 - No slots at 09:45, 10:00 or 10:15: b6 at 09:00Z is 10:00–10:30 local, and Lina starts at 11:00. If 10:00 shows up as free, the Z offset was parsed wrong.
 - 10:30–10:45 [3001]
@@ -125,12 +132,14 @@ Service 301 (Herrklippning, 30 min):
 - 14:00–18:30 [3001, 3002]
 
 Service 302 (Damklippning, 60 min, Lina only):
+
 - 11:00–12:00 [3002]
 - 14:00–18:00 [3002]
 
 **Clock test.** With `now` at `2026-10-23T13:05:00+02:00`, the first slot for service 101 on Fri 23 Oct is 13:15. 13:00 has already started, so it is excluded.
 
 **Search test.** From Medborgarplatsen (59.3143, 18.0736):
+
 - "massage" returns 101, 102 and 103 (venue 1, about 1.0 km away), then 201 (venue 2, about 3.5 km), never 401 (Q1)
 - With `radiusKm=2`, venue 2 drops out
 
@@ -141,19 +150,26 @@ Service 302 (Damklippning, 60 min, Lina only):
 All errors share one shape:
 
 ```json
-{ "error": { "code": "SLOT_TAKEN", "message": "Human-readable message", "details": {}, "alternatives": [] } }
+{
+  "error": {
+    "code": "SLOT_TAKEN",
+    "message": "Human-readable message",
+    "details": {},
+    "alternatives": []
+  }
+}
 ```
 
-| Code | HTTP status | When |
-| --- | --- | --- |
-| `VALIDATION_ERROR` | 400 | Input fails a Zod schema (`details` holds the flattened issues) |
-| `RANGE_IN_PAST` | 400 | `to` is before today |
-| `SERVICE_NOT_FOUND`, `STAFF_NOT_FOUND`, `BOOKING_NOT_FOUND` | 404 | Unknown id |
-| `STAFF_CANNOT_PERFORM` | 422 | The staff member isn't at that venue or doesn't offer that service |
-| `SLOT_IN_PAST` | 422 | `start` is at or before now |
-| `SLOT_INVALID` | 422 | The time could never be booked: off the grid, outside hours, or during a break |
-| `SLOT_TAKEN` | 409 | The time would be valid but is now blocked by a booking. `alternatives` holds up to 3 slots |
-| `IDEMPOTENCY_KEY_REUSED` | 422 | The same key was sent with a different body |
+| Code                                                        | HTTP status | When                                                                                        |
+| ----------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `VALIDATION_ERROR`                                          | 400         | Input fails a Zod schema (`details` holds the flattened issues)                             |
+| `RANGE_IN_PAST`                                             | 400         | `to` is before today                                                                        |
+| `SERVICE_NOT_FOUND`, `STAFF_NOT_FOUND`, `BOOKING_NOT_FOUND` | 404         | Unknown id                                                                                  |
+| `STAFF_CANNOT_PERFORM`                                      | 422         | The staff member isn't at that venue or doesn't offer that service                          |
+| `SLOT_IN_PAST`                                              | 422         | `start` is at or before now                                                                 |
+| `SLOT_INVALID`                                              | 422         | The time could never be booked: off the grid, outside hours, or during a break              |
+| `SLOT_TAKEN`                                                | 409         | The time would be valid but is now blocked by a booking. `alternatives` holds up to 3 slots |
+| `IDEMPOTENCY_KEY_REUSED`                                    | 422         | The same key was sent with a different body                                                 |
 
 ### GET /api/meta
 
@@ -163,7 +179,14 @@ All errors share one shape:
   "timezone": "Europe/Stockholm",
   "maxRangeDays": 14,
   "defaultRadiusKm": 25,
-  "serviceNames": ["Damklippning", "Djupvävnadsmassage", "Herrklippning", "Klassisk massage", "Massage", "Massör - 50 min"]
+  "serviceNames": [
+    "Damklippning",
+    "Djupvävnadsmassage",
+    "Herrklippning",
+    "Klassisk massage",
+    "Massage",
+    "Massör - 50 min"
+  ]
 }
 ```
 
@@ -173,16 +196,43 @@ All errors share one shape:
 
 ```json
 {
-  "query": { "q": "massage", "lat": 59.3143, "lng": 18.0736, "from": "2026-10-23", "to": "2026-10-26", "radiusKm": 25 },
+  "query": {
+    "q": "massage",
+    "lat": 59.3143,
+    "lng": 18.0736,
+    "from": "2026-10-23",
+    "to": "2026-10-26",
+    "radiusKm": 25
+  },
   "results": [
     {
-      "venue": { "id": 1, "name": "Salongens Massage", "position": { "lat": 59.3166428, "lng": 18.0561183 } },
+      "venue": {
+        "id": 1,
+        "name": "Salongens Massage",
+        "position": { "lat": 59.3166428, "lng": 18.0561183 }
+      },
       "service": { "id": 101, "name": "Klassisk massage", "durationMinutes": 60, "priceSek": 795 },
       "distanceMeters": 1026,
-      "staff": [{ "id": 1001, "name": "Anna" }, { "id": 1002, "name": "Erik" }],
-      "nextAvailable": { "start": "2026-10-23T09:00:00+02:00", "end": "2026-10-23T10:00:00+02:00", "staffIds": [1001] },
+      "staff": [
+        { "id": 1001, "name": "Anna" },
+        { "id": 1002, "name": "Erik" }
+      ],
+      "nextAvailable": {
+        "start": "2026-10-23T09:00:00+02:00",
+        "end": "2026-10-23T10:00:00+02:00",
+        "staffIds": [1001]
+      },
       "days": [
-        { "date": "2026-10-23", "slots": [{ "start": "2026-10-23T09:00:00+02:00", "end": "2026-10-23T10:00:00+02:00", "staffIds": [1001] }] },
+        {
+          "date": "2026-10-23",
+          "slots": [
+            {
+              "start": "2026-10-23T09:00:00+02:00",
+              "end": "2026-10-23T10:00:00+02:00",
+              "staffIds": [1001]
+            }
+          ]
+        },
         { "date": "2026-10-25", "slots": [] }
       ]
     }
@@ -197,7 +247,12 @@ The response echoes the `query` as actually applied (after clamping). Every day 
 Headers: `Idempotency-Key: <uuid>` (optional).
 
 ```json
-{ "serviceId": 101, "staffId": null, "start": "2026-10-23T13:00:00+02:00", "customerName": "Åsa Öberg" }
+{
+  "serviceId": 101,
+  "staffId": null,
+  "start": "2026-10-23T13:00:00+02:00",
+  "customerName": "Åsa Öberg"
+}
 ```
 
 A 201 (or a 200 on an idempotent replay) returns:
@@ -250,11 +305,13 @@ Run npm install, npm run typecheck and npm test. Then start npm run dev briefly 
 ```
 
 **Done when**
+
 - `npm install && npm run dev` starts both processes, and `/api/health` works through `:5173`.
 - `npm test` passes, including the TZ sanity test.
 - `npm run typecheck` passes.
 
 **Check before committing**
+
 - `package.json` has no `workspaces` field and no postinstall script, and nothing in the install needs node-gyp (`npm ls` shows none of `better-sqlite3`, `sqlite3`, `bcrypt`).
 - The TZ sanity test really runs under New York time. Temporarily change the expected zone to `UTC` and check that it fails.
 - The VeeValidate and Zod finding cites a real source. If the AI just asserted compatibility, check the changelog yourself.
@@ -281,10 +338,12 @@ Run typecheck and tests. Report the files you changed and any assumption that is
 ```
 
 **Done when**
+
 - The startup log lists the quirk warnings with their codes, and contains no personal data.
 - The loader and store tests pass.
 
 **Check before committing**
+
 - Look for `new Date(`, `.getDay()`, `.getHours()` and `Date.parse` (grep for them) in `src/server`. Each one is suspect.
 - Make sure bookings are compared as millis or `DateTime`, never as strings. String comparison would put `"…09:00:00Z"` before `"…09:30:00+01:00"`, which happens to be correct here, but only by luck.
 - Check that `data.json` is unchanged (`git status`).
@@ -315,9 +374,11 @@ Run typecheck and tests. Report the files you changed and any assumptions. Do no
 ```
 
 **Done when**
+
 - Every case in "Expected slots" is a passing test, under `TZ=America/New_York`.
 
 **Check before committing**
+
 - Check that the Herrklippning test really asserts that **10:00 is absent** on Mon 26 Oct. That is the test that catches a misread `Z` offset.
 - Check that the 102-at-09:15 test exists. It catches an overlap check written with `<=`, which would wrongly reject back-to-back bookings.
 - Check that the DST-day test asserts the `+01:00` suffix on the actual strings, not just the local hour.
@@ -349,9 +410,11 @@ Run typecheck and tests. Report the files you changed and any assumptions. Do no
 ```
 
 **Done when**
+
 - The search tests pass, and the shared schemas match the contract.
 
 **Check before committing**
+
 - Check that synonym matching can't explode: "ma" should not match everything through some synonym. Decide whether that's acceptable, and write it down.
 - Check that the 14-day span check counts inclusively (23 → 26 is 4 days), and that it gives the same answer in the client bundle and in the New York tests.
 - Check that venue 4 is excluded in `search`, not in the loader. `/api/meta` should also leave out its service name.
@@ -377,9 +440,11 @@ Run typecheck and tests. Report changes and assumptions. Do not commit.
 ```
 
 **Done when**
+
 - `curl "localhost:3001/api/search?q=massage&lat=59.3143&lng=18.0736&from=2026-10-23&to=2026-10-26"` works when started with `NOW=2026-10-22T08:00:00+02:00`.
 
 **Check before committing**
+
 - Check that responses are parsed with the shared schema in the tests. If the AI only checked the status code, the contract isn't really tested.
 - Check that the 500 handler doesn't echo `err.message` from unexpected errors.
 - Run a search and read the server output: no coordinates may appear.
@@ -414,9 +479,11 @@ Run typecheck and tests. Report changes and assumptions. Do not commit.
 ```
 
 **Done when**
+
 - All the booking tests pass, and a booking made over curl survives a server restart (it's in `.data/bookings.local.json`).
 
 **Check before committing**
+
 - Read `createBooking` yourself, line by line, looking for an `await` between the availability check and `store.add`. If the file write is async, a second request can slip in. This is a likely AI-log entry.
 - Check that the booking check reuses the engine. If the AI wrote a separate overlap check for booking, search and booking can disagree.
 - Check that the concurrency test actually runs the two requests concurrently (`Promise.all`), not one after the other.
@@ -450,10 +517,12 @@ Run typecheck and tests, and start the dev server to check the form works in the
 ```
 
 **Done when**
+
 - Submitting puts the search in the URL, and reloading the page restores both the form and the query.
 - Denying geolocation shows a helpful message and the preset select still works.
 
 **Check before committing**
+
 - Make sure the date defaults come from `meta.now`. Run with `NOW=2026-10-22T08:00:00+02:00` and check that the form defaults to 22 Oct.
 - Check that geolocation errors are handled and don't crash the page or get silently swallowed.
 
@@ -479,10 +548,12 @@ For now, the select event just logs to the console. Booking comes in task 3.3. R
 ```
 
 **Done when**
+
 - With `NOW` pinned, searching "massage" near Medborgarplatsen for 23–26 Oct shows Anna's 09:00 on Friday, and nothing for 09:15–09:45 on 101.
 - The "Herrklippning" search for Monday 26 Oct shows no 10:00 slot.
 
 **Check before committing**
+
 - Compare one card's times with "Expected slots". This end-to-end check confirms that the UI formats times in Stockholm time, not in your browser's zone. Set your OS zone to something else, or use Chrome DevTools sensor overrides, and check again.
 - The tabs must be usable with the keyboard alone.
 
@@ -507,11 +578,13 @@ Run typecheck and tests. In the browser: book a slot, reload the confirmation pa
 ```
 
 **Done when**
+
 - Booking works from both the "Next" button and the slot grid.
 - The two-tab conflict shows the alternatives, and picking one completes the booking.
 - The confirmation page survives a reload.
 
 **Check before committing**
+
 - Check that `useMutation` is inline in `BookingDialog.vue`.
 - Double-click "Confirm" quickly and check that only one booking is created (look in `.data/bookings.local.json`).
 - Check that the idempotency key stays the same on retry, and that a new key is made only when the dialog is reopened.
@@ -553,6 +626,7 @@ Do not commit.
 ```
 
 **Check before committing**
+
 - Read `DECISIONS.md` and `AI.md` out loud. Every sentence must be true of the code that exists. Delete anything the AI claims that you didn't do.
 - `DECISIONS.md` must fit on one page.
 
@@ -574,14 +648,15 @@ Click through search, booking and conflict once. Check that `data.json` is uncha
 
 Add an entry whenever you corrected, rejected or overrode something. Your best 2–3 go into `AI.md`. The "Check before committing" lists are where most of these come from.
 
-| # | Task | What the AI produced | What I did instead | Why |
-| --- | --- | --- | --- | --- |
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
-| 4 | | | | |
+| #   | Task | What the AI produced                                                           | What I did instead                                                                                                 | Why                                                                     |
+| --- | ---- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| 1   | 1.2  | A test for service 102 at 09:30 that only asserted Anna wasn't in a 09:30 slot | Had it assert the exact slot starts before 10:00 (09:00 and 09:15, both Anna) and that 09:30 and 09:45 don't exist | The original passed even if the engine returned no morning slots at all |
+| 2   |      |                                                                                |                                                                                                                    |                                                                         |
+| 3   |      |                                                                                |                                                                                                                    |                                                                         |
+| 4   |      |                                                                                |                                                                                                                    |                                                                         |
 
 Likely candidates, judging by where models usually slip:
+
 - Parsing the `Z` booking as local time, or comparing ISO strings
 - An `<=` in the overlap check that rejects back-to-back slots
 - Not intersecting staff hours with venue hours
