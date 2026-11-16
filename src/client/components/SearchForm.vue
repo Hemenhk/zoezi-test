@@ -142,12 +142,12 @@ const onSubmit = handleSubmit((out) => {
   void router.push({ path: '/', query });
 });
 
-const field = 'mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 aria-[invalid=true]:border-red-600';
+const field = 'mt-1 block min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 aria-[invalid=true]:border-red-600';
 const label = 'block text-sm font-medium text-slate-800';
 const errorText = 'mt-1 text-sm text-red-700';
 const hintText = 'mt-1 text-sm text-slate-600';
 const button =
-  'rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:opacity-60';
+  'min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-600';
 </script>
 
 <template>
@@ -169,10 +169,11 @@ const button =
       <datalist id="service-names">
         <option v-for="name in meta.serviceNames" :key="name" :value="name" />
       </datalist>
-      <p v-if="errors.q" id="q-error" :class="errorText">{{ errors.q }}</p>
+      <p v-if="errors.q" id="q-error" role="alert" :class="errorText">{{ errors.q }}</p>
     </div>
 
     <fieldset
+      class="min-w-0"
       :aria-invalid="!!(errors.lat || errors.lng)"
       :aria-describedby="errors.lat || errors.lng ? 'location-error' : 'location-active'"
     >
@@ -181,8 +182,7 @@ const button =
         <button type="button" :class="button" :disabled="geoState === 'locating'" @click="useMyLocation">
           {{ geoState === 'locating' ? 'Locating…' : 'Use my location' }}
         </button>
-        <span class="text-sm text-slate-600">or</span>
-        <label class="sr-only" for="preset">Choose a place</label>
+        <label class="text-sm text-slate-600" for="preset">or choose a place</label>
         <select id="preset" :class="[field, 'mt-0 w-auto']" :value="presetValue" @change="onPresetChange">
           <option v-if="!activePreset" value="custom">Your location</option>
           <option v-for="p in LOCATION_PRESETS" :key="p.key" :value="p.key">{{ p.name }}</option>
@@ -192,13 +192,13 @@ const button =
         Searching near <strong>{{ locationName }}</strong
         ><template v-if="usingGeolocation && !activePreset"> (rounded to about 100 m)</template>.
       </p>
-      <p v-if="geoMessage" role="status" :class="errorText">{{ geoMessage }}</p>
-      <p v-if="errors.lat || errors.lng" id="location-error" :class="errorText">
+      <p v-if="geoMessage" role="alert" :class="errorText">{{ geoMessage }}</p>
+      <p v-if="errors.lat || errors.lng" id="location-error" role="alert" :class="errorText">
         Choose a place from the list.
       </p>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="min-w-0">
       <legend :class="label">Dates</legend>
       <div class="mt-1 flex flex-wrap gap-2">
         <button
@@ -213,7 +213,7 @@ const button =
         </button>
       </div>
       <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
+        <div class="min-w-0">
           <label for="from" :class="label">From</label>
           <input
             id="from"
@@ -225,9 +225,9 @@ const button =
             :aria-invalid="!!errors.from"
             :aria-describedby="errors.from ? 'from-error' : undefined"
           />
-          <p v-if="errors.from" id="from-error" :class="errorText">{{ errors.from }}</p>
+          <p v-if="errors.from" id="from-error" role="alert" :class="errorText">{{ errors.from }}</p>
         </div>
-        <div>
+        <div class="min-w-0">
           <label for="to" :class="label">To</label>
           <input
             id="to"
@@ -240,7 +240,7 @@ const button =
             :aria-invalid="!!errors.to"
             :aria-describedby="errors.to ? 'to-error' : 'to-hint'"
           />
-          <p v-if="errors.to" id="to-error" :class="errorText">{{ errors.to }}</p>
+          <p v-if="errors.to" id="to-error" role="alert" :class="errorText">{{ errors.to }}</p>
           <p v-else id="to-hint" :class="hintText">At most {{ meta.maxRangeDays }} days.</p>
         </div>
       </div>
@@ -258,12 +258,12 @@ const button =
       >
         <option v-for="km in radiusOptions" :key="km" :value="km">Within {{ km }} km</option>
       </select>
-      <p v-if="errors.radiusKm" id="radius-error" :class="errorText">{{ errors.radiusKm }}</p>
+      <p v-if="errors.radiusKm" id="radius-error" role="alert" :class="errorText">{{ errors.radiusKm }}</p>
     </div>
 
     <button
       type="submit"
-      class="w-full rounded-md bg-slate-900 px-4 py-2.5 font-medium text-white hover:bg-slate-800 sm:w-auto"
+      class="min-h-11 w-full rounded-md bg-slate-900 px-4 py-2.5 font-medium text-white hover:bg-slate-800 sm:w-auto"
     >
       Search
     </button>

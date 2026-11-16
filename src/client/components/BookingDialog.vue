@@ -132,13 +132,13 @@ function onClosed() {
   <dialog
     ref="dialogEl"
     aria-labelledby="booking-title"
-    class="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg border border-slate-200 bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/50"
+    class="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-lg border border-slate-200 bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/50"
     @close="onClosed"
   >
     <form class="p-5" novalidate @submit.prevent="onSubmit">
       <h2 id="booking-title" class="text-lg font-semibold">Confirm your booking</h2>
 
-      <dl class="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+      <dl class="mt-3 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 text-sm break-words">
         <dt class="text-slate-600">Venue</dt>
         <dd class="font-medium">{{ result.venue.name }}</dd>
         <dt class="text-slate-600">Service</dt>
@@ -164,9 +164,9 @@ function onClosed() {
           autocomplete="name"
           :aria-invalid="errors.customerName ? 'true' : 'false'"
           :aria-describedby="errors.customerName ? 'customer-name-error' : undefined"
-          class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-base aria-invalid:border-red-600"
+          class="mt-1 w-full min-h-11 rounded-md border border-slate-300 px-3 py-2 text-base aria-invalid:border-red-600"
         />
-        <p v-if="errors.customerName" id="customer-name-error" class="mt-1 text-sm text-red-700">
+        <p v-if="errors.customerName" id="customer-name-error" role="alert" class="mt-1 text-sm text-red-700">
           {{ errors.customerName }}
         </p>
       </div>
@@ -180,7 +180,7 @@ function onClosed() {
               <li v-for="alt in alternatives" :key="alt.start">
                 <button
                   type="button"
-                  class="rounded-md border border-slate-300 bg-white px-3 py-2 font-medium text-slate-900 hover:border-slate-900"
+                  class="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 font-medium text-slate-900 hover:border-slate-900"
                   @click="pickAlternative(alt)"
                 >
                   {{ altLabel(alt) }}
@@ -196,7 +196,7 @@ function onClosed() {
       <div class="mt-5 flex flex-wrap justify-end gap-2">
         <button
           type="button"
-          class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium"
+          class="min-h-11 rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium"
           @click="close"
         >
           {{ taken || unbookable ? 'Back to times' : 'Cancel' }}
@@ -205,7 +205,7 @@ function onClosed() {
           v-if="!unbookable && !(taken && alternatives.length === 0)"
           type="submit"
           :disabled="mutation.isPending.value"
-          class="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-500"
+          class="min-h-11 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-500"
         >
           {{ mutation.isPending.value ? 'Booking…' : error && !taken ? 'Try again' : 'Confirm' }}
         </button>

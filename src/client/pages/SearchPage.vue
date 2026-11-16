@@ -99,6 +99,13 @@ const headline = computed(() => {
   return `${n} ${n === 1 ? 'result' : 'results'} for ‘${q}’ within ${radiusKm} km of ${place}`;
 });
 
+const announcement = computed(() => {
+  if (!params.value || searchQuery.isError.value) return '';
+  if (searchQuery.isPending.value) return 'Loading results…';
+  if (searchQuery.isPlaceholderData.value) return 'Updating results…';
+  return headline.value;
+});
+
 const today = computed(() => meta.value?.now.slice(0, 10) ?? '');
 const canWiden = computed(() => (params.value?.radiusKm ?? 50) < 50);
 const canNext7 = computed(
@@ -120,13 +127,13 @@ function onSelect(next: SlotSelection) {
 <template>
   <h1 class="text-xl font-semibold text-slate-900">Find and book a service</h1>
 
-  <p v-if="metaQuery.isPending.value" class="mt-4 text-slate-600" role="status">Loading…</p>
+  <p v-if="metaQuery.isPending.value" class="mt-4 text-slate-600" role="status">Loading the search form…</p>
 
   <div v-else-if="metaQuery.isError.value || !meta || !initial" class="mt-4" role="alert">
     <p class="text-red-700">We couldn’t load the search form.</p>
     <button
       type="button"
-      class="mt-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+      class="mt-2 min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
       @click="metaQuery.refetch()"
     >
       Retry
@@ -134,6 +141,9 @@ function onSelect(next: SlotSelection) {
   </div>
 
   <template v-else>
+    <!-- Always in the page, so changes to its text are announced (a live region added together with its text often is not). -->
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">{{ announcement }}</p>
+
     <SearchForm class="mt-4" :meta="meta" :initial="initial" :validate-on-mount="urlInvalid"
       @unchanged="searchQuery.refetch()"
     />
@@ -151,10 +161,10 @@ function onSelect(next: SlotSelection) {
 
       <template v-else-if="searchQuery.data.value">
         <div class="flex flex-wrap items-center justify-between gap-3">
-          <p aria-live="polite" class="font-medium text-slate-900">{{ headline }}</p>
+          <p class="font-medium text-slate-900">{{ headline }}</p>
           <div v-if="sortedResults.length > 1">
             <label for="sort" class="mr-2 text-sm font-medium text-slate-800">Sort by</label>
-            <select id="sort" v-model="sortKey" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">
+            <select id="sort" v-model="sortKey" class="min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">
               <option value="distance">Distance</option>
               <option value="earliest">Earliest available</option>
               <option value="price">Price</option>
@@ -162,9 +172,9 @@ function onSelect(next: SlotSelection) {
           </div>
         </div>
 
-        <p v-if="searchQuery.isError.value" role="alert" class="mt-3 text-sm text-red-700">
-          Could not refresh these results.
-          <button type="button" class="font-medium underline" @click="searchQuery.refetch()">Retry</button>
+        <p v-if="searchQuery.isError.value" role="alert" class="mt-3 flex flex-wrap items-center gap-x-2 text-sm text-red-700">
+          We couldn’t refresh these results.
+          <button type="button" class="inline-flex min-h-11 items-center font-medium underline" @click="searchQuery.refetch()">Retry</button>
         </p>
 
         <ResultsEmpty
@@ -175,7 +185,7 @@ function onSelect(next: SlotSelection) {
           @widen="updateQuery({ radiusKm: '50' })"
           @next7="updateQuery({ from: today, to: addDays(today, 6) })"
         />
-        <ul v-else class="mt-4 space-y-4" :class="searchQuery.isPlaceholderData.value && 'opacity-60'">
+        <ul v-else class="mt-4 space-y-4" :aria-busy="searchQuery.isPlaceholderData.value" :class="searchQuery.isPlaceholderData.value && 'opacity-60'">
           <li v-for="r in sortedResults" :key="r.service.id">
             <ResultCard :result="r" @select="onSelect" />
           </li>

@@ -19,7 +19,7 @@ function bookNext() {
   >
     <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
       <div>
-        <h3 class="text-base font-semibold" :class="result.nextAvailable ? 'text-slate-900' : 'text-slate-700'">
+        <h3 class="text-base font-semibold break-words" :class="result.nextAvailable ? 'text-slate-900' : 'text-slate-700'">
           {{ result.venue.name }}
         </h3>
         <p class="text-sm">{{ result.service.name }}</p>
@@ -35,7 +35,7 @@ function bookNext() {
     <template v-if="result.nextAvailable">
       <button
         type="button"
-        class="mt-3 w-full rounded-md bg-slate-900 px-4 py-2.5 text-base font-semibold text-white hover:bg-slate-800 sm:w-auto"
+        class="mt-3 min-h-11 w-full rounded-md bg-slate-900 px-4 py-2.5 text-base font-semibold text-white hover:bg-slate-800 sm:w-auto"
         @click="bookNext"
       >
         Next: {{ formatDayTime(result.nextAvailable.start) }}
@@ -44,6 +44,6 @@ function bookNext() {
         <SlotPicker :result="result" @select="emit('select', $event)" />
       </div>
     </template>
-    <p v-else class="mt-3 text-sm font-medium">No free times in these dates</p>
+    <p v-else class="mt-3 text-sm font-medium">No free times in these dates.</p>
   </article>
 </template>

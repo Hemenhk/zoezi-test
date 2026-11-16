@@ -33,7 +33,7 @@ const backTo = computed(() => {
   <div v-else-if="notFound" role="alert">
     <h1 class="text-xl font-semibold text-slate-900">Booking not found</h1>
     <p class="mt-2 text-slate-600">We couldn’t find that booking. The link may be wrong.</p>
-    <RouterLink :to="backTo" class="mt-4 inline-block font-medium text-slate-900 underline underline-offset-2">
+    <RouterLink :to="backTo" class="mt-4 inline-flex min-h-11 items-center font-medium text-slate-900 underline underline-offset-2">
       Find a time
     </RouterLink>
   </div>
@@ -42,7 +42,7 @@ const backTo = computed(() => {
     <p class="text-red-700">We couldn’t load your booking.</p>
     <button
       type="button"
-      class="mt-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
+      class="mt-2 min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium"
       @click="query.refetch()"
     >
       Retry
@@ -53,7 +53,7 @@ const backTo = computed(() => {
     <h1 class="text-xl font-semibold text-slate-900">Your booking is confirmed</h1>
     <p class="mt-1 text-slate-600">Reference <span class="font-mono font-semibold text-slate-900">{{ reference }}</span></p>
 
-    <dl class="mt-4 grid max-w-md grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 rounded-lg border border-slate-200 bg-white p-4 text-sm">
+    <dl class="mt-4 grid max-w-md grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 rounded-lg border border-slate-200 bg-white p-4 text-sm break-words">
       <dt class="text-slate-600">Name</dt>
       <dd class="font-medium">{{ booking.customerName }}</dd>
       <dt class="text-slate-600">Venue</dt>
@@ -72,7 +72,7 @@ const backTo = computed(() => {
 
     <RouterLink
       :to="backTo"
-      class="mt-5 inline-block rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+      class="mt-5 inline-flex min-h-11 items-center rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
     >
       Book another time
     </RouterLink>

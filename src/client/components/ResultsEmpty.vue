@@ -3,7 +3,7 @@ defineProps<{ canWiden: boolean; canNext7: boolean }>();
 const emit = defineEmits<{ widen: []; next7: [] }>();
 
 const button =
-  'rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50';
+  'min-h-11 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50';
 </script>
 
 <template>

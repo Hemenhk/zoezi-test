@@ -75,7 +75,7 @@ async function onTabKey(event: KeyboardEvent, index: number) {
 }
 
 const chip =
-  'rounded-full border px-3 py-1.5 text-sm font-medium aria-pressed:border-slate-900 aria-pressed:bg-slate-900 aria-pressed:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50';
+  'min-h-11 rounded-full border px-3 py-1.5 text-sm font-medium aria-pressed:border-slate-900 aria-pressed:bg-slate-900 aria-pressed:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50';
 </script>
 
 <template>
@@ -95,7 +95,7 @@ const chip =
       </button>
     </div>
 
-    <div class="-mx-1 mt-3 overflow-x-auto px-1 pb-1">
+    <div class="-mx-1 mt-2 overflow-x-auto p-1">
       <div role="tablist" aria-label="Day" class="flex gap-2">
         <button
           v-for="(d, i) in days"
@@ -108,7 +108,7 @@ const chip =
           :aria-selected="d.date === activeDate"
           :aria-controls="`${uid}-panel`"
           :tabindex="d.date === activeDate ? 0 : -1"
-          class="min-w-20 shrink-0 rounded-md border px-3 py-1.5 text-center text-sm disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500 aria-selected:border-slate-900 aria-selected:bg-slate-900 aria-selected:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
+          class="min-h-11 min-w-20 shrink-0 rounded-md border px-3 py-1.5 text-center text-sm disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-600 aria-selected:border-slate-900 aria-selected:bg-slate-900 aria-selected:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
           @click="chosenDate = d.date"
           @keydown="onTabKey($event, i)"
         >
@@ -133,7 +133,7 @@ const chip =
           <li v-for="slot in g.shown" :key="slot.start">
             <button
               type="button"
-              class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 hover:border-slate-900 hover:bg-slate-50"
+              class="min-h-11 min-w-16 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 hover:border-slate-900 hover:bg-slate-50"
               @click="emit('select', { result, slot, staffId })"
             >
               {{ formatTime(slot.start) }}
@@ -143,7 +143,7 @@ const chip =
         <button
           v-if="!g.open && g.hidden > 0"
           type="button"
-          class="mt-2 text-sm font-medium text-slate-800 underline underline-offset-2"
+          class="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-slate-800 underline underline-offset-2"
           @click="showAll(g.key)"
         >
           Show all ({{ g.all.length }})
