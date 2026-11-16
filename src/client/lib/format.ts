@@ -21,3 +21,69 @@ export function addDays(date: string, days: number): string {
 export function localDateOf(apiIso: string): string {
   return apiIso.slice(0, 10);
 }
+
+// --- Display helpers (Intl only). Everything is shown in the venue's time, whatever the browser's zone. ---
+
+const ZONE = 'Europe/Stockholm';
+
+const weekdayFmt = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, weekday: 'short' });
+const dayMonthFmt = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, day: 'numeric', month: 'short' });
+const timeFmt = new Intl.DateTimeFormat('en-GB', { timeZone: ZONE, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+const priceFmt = new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK', maximumFractionDigits: 0 });
+const kmFmt = new Intl.NumberFormat('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+/** An instant for a local calendar date. Noon UTC is the same calendar day in Stockholm all year. */
+function instantOfDate(date: string): Date {
+  const [y, m, d] = parts(date);
+  return new Date(Date.UTC(y, m - 1, d, 12));
+}
+
+/** "Fri" for a "YYYY-MM-DD" date. */
+export function formatWeekday(date: string): string {
+  return weekdayFmt.format(instantOfDate(date));
+}
+
+/** "23 Oct" for a "YYYY-MM-DD" date. */
+export function formatDayMonth(date: string): string {
+  return dayMonthFmt.format(instantOfDate(date));
+}
+
+/** "Fri 23 Oct" for a "YYYY-MM-DD" date. */
+export function formatDayLabel(date: string): string {
+  return `${formatWeekday(date)} ${formatDayMonth(date)}`;
+}
+
+/** "09:00" (24-hour) for an API timestamp. */
+export function formatTime(apiIso: string): string {
+  return timeFmt.format(new Date(apiIso));
+}
+
+/** "Fri 23 Oct, 09:00" for an API timestamp. */
+export function formatDayTime(apiIso: string): string {
+  return `${formatDayLabel(localDateOf(apiIso))}, ${formatTime(apiIso)}`;
+}
+
+/** The venue-local hour (0-23) of an API timestamp. */
+export function localHour(apiIso: string): number {
+  return Number(formatTime(apiIso).slice(0, 2));
+}
+
+/** "795 kr" */
+export function formatPrice(sek: number): string {
+  return priceFmt.format(sek);
+}
+
+/** "850 m" below 1 km, otherwise "1.2 km". */
+export function formatDistance(meters: number): string {
+  return meters < 1000 ? `${Math.round(meters)} m` : `${kmFmt.format(meters / 1000)} km`;
+}
+
+/** "60 min" */
+export function formatDuration(minutes: number): string {
+  return `${minutes} min`;
+}
+
+/** Epoch milliseconds of an API timestamp, for comparing instants (never compare the strings). */
+export function epochOf(apiIso: string): number {
+  return new Date(apiIso).getTime();
+}

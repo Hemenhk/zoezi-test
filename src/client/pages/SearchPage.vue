@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { keepPreviousData, useQuery } from '@tanstack/vue-query';
-import { searchQuerySchema } from '@shared/schemas';
+import { searchQuerySchema, type SearchResult } from '@shared/schemas';
 import SearchForm, { type SearchFormValues } from '../components/SearchForm.vue';
 import { fetchMeta, fetchSearch } from '../lib/api';
-import { addDays } from '../lib/format';
-import { DEFAULT_PRESET } from '../lib/locations';
+import ResultCard from '../components/ResultCard.vue';
+import ResultSkeleton from '../components/ResultSkeleton.vue';
+import ResultsEmpty from '../components/ResultsEmpty.vue';
+import ResultsError from '../components/ResultsError.vue';
+import type { SlotSelection } from '../components/SlotPicker.vue';
+import { addDays, epochOf } from '../lib/format';
+import { DEFAULT_PRESET, findPreset } from '../lib/locations';
 
 const route = useRoute();
+const router = useRouter();
 
 const metaQuery = useQuery({ queryKey: ['meta'], queryFn: fetchMeta, staleTime: 60_000 });
 const meta = computed(() => metaQuery.data.value);
@@ -58,6 +64,58 @@ const searchQuery = useQuery({
   enabled: computed(() => params.value !== undefined),
   placeholderData: keepPreviousData,
 });
+
+// --- Results ---
+
+type SortKey = 'distance' | 'earliest' | 'price';
+const sortKey = ref<SortKey>('distance');
+
+const sortedResults = computed(() => {
+  const results = [...(searchQuery.data.value?.results ?? [])];
+  const byDistance = (a: SearchResult, b: SearchResult) =>
+    a.distanceMeters - b.distanceMeters || a.service.id - b.service.id;
+  if (sortKey.value === 'price') {
+    return results.sort((a, b) => a.service.priceSek - b.service.priceSek || byDistance(a, b));
+  }
+  if (sortKey.value === 'earliest') {
+    // Compare instants, not strings. Results with no free time go last.
+    const at = (r: SearchResult) => (r.nextAvailable ? epochOf(r.nextAvailable.start) : Infinity);
+    return results.sort((a, b) => {
+      const d = at(a) - at(b);
+      return d === 0 || Number.isNaN(d) ? byDistance(a, b) : d;
+    });
+  }
+  return results.sort(byDistance);
+});
+
+// What was searched, from the query the server applied (after clamping).
+const headline = computed(() => {
+  const data = searchQuery.data.value;
+  if (!data) return '';
+  const { q, radiusKm, lat, lng } = data.query;
+  const n = data.results.length;
+  const place = findPreset(lat, lng)?.name ?? 'your location';
+  return `${n} ${n === 1 ? 'result' : 'results'} for ‘${q}’ within ${radiusKm} km of ${place}`;
+});
+
+const today = computed(() => meta.value?.now.slice(0, 10) ?? '');
+const canWiden = computed(() => (params.value?.radiusKm ?? 50) < 50);
+const canNext7 = computed(
+  () => !!params.value && (params.value.from !== today.value || params.value.to !== addDays(today.value, 6)),
+);
+
+function updateQuery(changes: Record<string, string>) {
+  void router.push({ path: '/', query: { ...route.query, ...changes } });
+}
+
+function onSelect(selection: SlotSelection) {
+  // Booking arrives in task 3.3.
+  console.log('select', {
+    serviceId: selection.result.service.id,
+    start: selection.slot.start,
+    staffId: selection.staffId,
+  });
+}
 </script>
 
 <template>
@@ -77,17 +135,53 @@ const searchQuery = useQuery({
   </div>
 
   <template v-else>
-    <SearchForm class="mt-4" :meta="meta" :initial="initial" :validate-on-mount="urlInvalid" />
+    <SearchForm class="mt-4" :meta="meta" :initial="initial" :validate-on-mount="urlInvalid"
+      @unchanged="searchQuery.refetch()"
+    />
 
     <p v-if="!hasSearch" class="mt-6 text-slate-600">Try “massage” near Medborgarplatsen.</p>
 
-    <!-- Results arrive in task 3.2. Until then, a plain status line shows that the search ran. -->
-    <div v-else-if="params" class="mt-6 text-slate-700" aria-live="polite">
-      <p v-if="searchQuery.isError.value" role="alert" class="text-red-700">The search failed. Please try again.</p>
-      <p v-else-if="searchQuery.data.value">
-        {{ searchQuery.data.value.results.length }} results
-      </p>
-      <p v-else>Searching…</p>
-    </div>
+    <section v-else-if="params" class="mt-6" aria-label="Search results">
+      <ResultSkeleton v-if="searchQuery.isPending.value" />
+
+      <ResultsError
+        v-else-if="searchQuery.isError.value && !searchQuery.data.value"
+        :message="searchQuery.error.value?.message ?? 'Please try again.'"
+        @retry="searchQuery.refetch()"
+      />
+
+      <template v-else-if="searchQuery.data.value">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p aria-live="polite" class="font-medium text-slate-900">{{ headline }}</p>
+          <div v-if="sortedResults.length > 1">
+            <label for="sort" class="mr-2 text-sm font-medium text-slate-800">Sort by</label>
+            <select id="sort" v-model="sortKey" class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm">
+              <option value="distance">Distance</option>
+              <option value="earliest">Earliest available</option>
+              <option value="price">Price</option>
+            </select>
+          </div>
+        </div>
+
+        <p v-if="searchQuery.isError.value" role="alert" class="mt-3 text-sm text-red-700">
+          Could not refresh these results.
+          <button type="button" class="font-medium underline" @click="searchQuery.refetch()">Retry</button>
+        </p>
+
+        <ResultsEmpty
+          v-if="sortedResults.length === 0"
+          class="mt-4"
+          :can-widen="canWiden"
+          :can-next7="canNext7"
+          @widen="updateQuery({ radiusKm: '50' })"
+          @next7="updateQuery({ from: today, to: addDays(today, 6) })"
+        />
+        <ul v-else class="mt-4 space-y-4" :class="searchQuery.isPlaceholderData.value && 'opacity-60'">
+          <li v-for="r in sortedResults" :key="r.service.id">
+            <ResultCard :result="r" @select="onSelect" />
+          </li>
+        </ul>
+      </template>
+    </section>
   </template>
 </template>

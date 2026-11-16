@@ -22,6 +22,8 @@ const props = defineProps<{
   validateOnMount: boolean;
 }>();
 
+const emit = defineEmits<{ unchanged: [] }>();
+
 const router = useRouter();
 
 // The form schema is the shared search schema, so the client and server cannot disagree.
@@ -122,17 +124,22 @@ const radiusOptions = computed(() =>
 // --- Submit: the URL is the single source of truth for the search ---
 
 const onSubmit = handleSubmit((out) => {
-  void router.push({
-    path: '/',
-    query: {
-      q: out.q,
-      lat: String(out.lat),
-      lng: String(out.lng),
-      from: out.from,
-      to: out.to,
-      radiusKm: String(out.radiusKm),
-    },
-  });
+  const query = {
+    q: out.q,
+    lat: String(out.lat),
+    lng: String(out.lng),
+    from: out.from,
+    to: out.to,
+    radiusKm: String(out.radiusKm),
+  };
+  const current = router.currentRoute.value.query;
+  const same = Object.entries(query).every(([k, v]) => current[k] === v);
+  if (same) {
+    // The URL would not change, so tell the page to refetch and the button never feels dead.
+    emit('unchanged');
+    return;
+  }
+  void router.push({ path: '/', query });
 });
 
 const field = 'mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 aria-[invalid=true]:border-red-600';
