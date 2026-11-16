@@ -50,3 +50,18 @@ Booking should return the created booking, or a clear error.
 4. **`AI.md`**
    * Which tools you used and for what
    * 2–3 places where you corrected, rejected or overrode the AI's output, and why
+
+---
+
+## Running this implementation
+
+Requires Node >= 20.19.
+
+```
+npm install
+npm run dev          # API on :3001, Vite client on :5173 (proxies /api)
+npm test             # vitest, TZ forced to America/New_York
+npm run typecheck    # vue-tsc --noEmit
+npm run build        # vite build of the client (a check only)
+NOW=2026-10-22T08:00:00+02:00 npm run dev   # pin the clock to see the existing Oct 2026 bookings
+```
