@@ -5,6 +5,7 @@ import { keepPreviousData, useQuery } from '@tanstack/vue-query';
 import { searchQuerySchema, type SearchResult } from '@shared/schemas';
 import SearchForm, { type SearchFormValues } from '../components/SearchForm.vue';
 import { fetchMeta, fetchSearch } from '../lib/api';
+import BookingDialog from '../components/BookingDialog.vue';
 import ResultCard from '../components/ResultCard.vue';
 import ResultSkeleton from '../components/ResultSkeleton.vue';
 import ResultsEmpty from '../components/ResultsEmpty.vue';
@@ -108,13 +109,11 @@ function updateQuery(changes: Record<string, string>) {
   void router.push({ path: '/', query: { ...route.query, ...changes } });
 }
 
-function onSelect(selection: SlotSelection) {
-  // Booking arrives in task 3.3.
-  console.log('select', {
-    serviceId: selection.result.service.id,
-    start: selection.slot.start,
-    staffId: selection.staffId,
-  });
+// The booking dialog exists only while a slot is selected, so each opening is a fresh dialog.
+const selection = ref<SlotSelection | null>(null);
+
+function onSelect(next: SlotSelection) {
+  selection.value = next;
 }
 </script>
 
@@ -184,4 +183,6 @@ function onSelect(selection: SlotSelection) {
       </template>
     </section>
   </template>
+
+  <BookingDialog v-if="selection" :selection="selection" @close="selection = null" />
 </template>

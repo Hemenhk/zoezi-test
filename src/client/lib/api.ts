@@ -1,8 +1,11 @@
 import { z } from 'zod';
 import {
+  bookingResponseSchema,
   metaResponseSchema,
   searchResponseSchema,
   slotSchema,
+  type BookingDto,
+  type CreateBookingInput,
   type MetaResponse,
   type SearchQuery,
   type SearchResponse,
@@ -97,4 +100,19 @@ export function fetchSearch(params: SearchQuery): Promise<SearchResponse> {
     radiusKm: String(params.radiusKm),
   });
   return request(`/api/search?${qs}`, searchResponseSchema);
+}
+
+/** Creates a booking. The same idempotency key with the same body returns the original booking. */
+export async function createBooking(body: CreateBookingInput, idempotencyKey: string): Promise<BookingDto> {
+  const res = await request('/api/bookings', bookingResponseSchema, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': idempotencyKey },
+    body,
+  });
+  return res.booking;
+}
+
+export async function getBooking(id: string): Promise<BookingDto> {
+  const res = await request(`/api/bookings/${encodeURIComponent(id)}`, bookingResponseSchema);
+  return res.booking;
 }
