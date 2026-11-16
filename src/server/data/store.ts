@@ -48,6 +48,14 @@ export class BookingStore {
     return this.byStaff.get(staffId) ?? [];
   }
 
+  /**
+   * A booking created at runtime (through the API), or undefined. The data.json bookings are
+   * deliberately not returned: they have no customer and were never made through this API.
+   */
+  getRuntime(id: string): Booking | undefined {
+    return this.runtime.find((b) => b.id === id);
+  }
+
   /** Synchronous on purpose. If persisting throws, nothing has been added. */
   add(booking: Booking): void {
     const nextRuntime = [...this.runtime, booking];

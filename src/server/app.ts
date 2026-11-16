@@ -3,7 +3,9 @@ import type { DateTime } from 'luxon';
 import { DATA_PATH, PERSIST_PATH, getNow } from './config';
 import { loadData, type DataModel } from './data/load';
 import { BookingStore } from './data/store';
+import { IdempotencyKeys } from './domain/booking';
 import { registerErrorHandling } from './errors';
+import { bookingRoutes } from './routes/bookings';
 import { metaRoutes } from './routes/meta';
 import { searchRoutes } from './routes/search';
 
@@ -12,6 +14,7 @@ declare module 'fastify' {
     model: DataModel;
     store: BookingStore;
     now: () => DateTime;
+    idempotency: IdempotencyKeys;
   }
 }
 
@@ -42,6 +45,7 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
   app.decorate('model', model);
   app.decorate('store', store);
   app.decorate('now', now);
+  app.decorate('idempotency', new IdempotencyKeys());
 
   // One summary line: counts per code. Warnings hold ids only, so no personal data is logged.
   const codes: Record<string, number> = {};
@@ -51,6 +55,7 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
   app.get('/api/health', async () => ({ ok: true }));
   metaRoutes(app);
   searchRoutes(app);
+  bookingRoutes(app);
 
   return app;
 }

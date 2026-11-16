@@ -87,3 +87,43 @@ export const metaResponseSchema = z.object({
   serviceNames: z.array(z.string()),
 });
 export type MetaResponse = z.infer<typeof metaResponseSchema>;
+
+// --- Bookings (POST /api/bookings, GET /api/bookings/:id) ---
+
+// D17: letters from any script (with combining marks), spaces, hyphens, apostrophes
+// (straight and typographic) and periods. Only U+0020 counts as a space, so tabs, newlines
+// and other control characters are rejected.
+const NAME_CHARS = /^[\p{L}\p{M} .'’-]+$/u;
+const HAS_LETTER = /\p{L}/u;
+
+export const customerNameSchema = z
+  .string()
+  .trim()
+  .min(2, 'Name must be at least 2 characters')
+  .max(80, 'Name must be at most 80 characters')
+  .regex(NAME_CHARS, 'Name may only contain letters, spaces, hyphens, apostrophes and periods')
+  .regex(HAS_LETTER, 'Name must contain a letter');
+
+export const createBookingSchema = z.object({
+  serviceId: z.number().int().positive(),
+  staffId: z.number().int().positive().nullable(),
+  start: apiDateTime,
+  customerName: customerNameSchema,
+});
+export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+
+export const bookingSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  customerName: z.string(),
+  start: apiDateTime,
+  end: apiDateTime,
+  venue: z.object({ id: z.number().int(), name: z.string() }),
+  service: serviceDtoSchema,
+  staff: z.object({ id: z.number().int(), name: z.string() }),
+  createdAt: apiDateTime,
+});
+export type BookingDto = z.infer<typeof bookingSchema>;
+
+export const bookingResponseSchema = z.object({ booking: bookingSchema });
+export type BookingResponse = z.infer<typeof bookingResponseSchema>;
