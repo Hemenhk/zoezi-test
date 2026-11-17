@@ -63,5 +63,31 @@ npm run dev          # API on :3001, Vite client on :5173 (proxies /api)
 npm test             # vitest, TZ forced to America/New_York
 npm run typecheck    # vue-tsc --noEmit
 npm run build        # vite build of the client (a check only)
-NOW=2026-10-22T08:00:00+02:00 npm run dev   # pin the clock to see the existing Oct 2026 bookings
 ```
+
+Every booking in `data.json` is in October 2026, so pin the clock to see them block slots:
+
+```
+NOW=2026-10-22T08:00:00+02:00 npm run dev
+```
+
+Example requests against the dev server (API on :3001), with the clock pinned as above.
+
+Search for "massage" within 25 km of Medborgarplatsen, 23 to 26 Oct:
+
+```
+curl "localhost:3001/api/search?q=massage&lat=59.3143&lng=18.0736&from=2026-10-23&to=2026-10-26"
+```
+
+Book Klassisk massage (service 101) on Fri 23 Oct at 13:00 with any staff member. The server assigns one and replies 201. Sending the same request with the same `Idempotency-Key` returns the same booking with 200:
+
+```
+curl -X POST localhost:3001/api/bookings \
+  -H 'Content-Type: application/json' \
+  -H 'Idempotency-Key: 11111111-1111-4111-8111-111111111111' \
+  -d '{"serviceId":101,"staffId":null,"start":"2026-10-23T13:00:00+02:00","customerName":"Test Person"}'
+```
+
+New bookings are also saved in `.data/bookings.local.json` (gitignored). `data.json` is never written.
+
+More: [DECISIONS.md](DECISIONS.md), [AI.md](AI.md), [docs/PLAN.md](docs/PLAN.md), [docs/REDESIGN.md](docs/REDESIGN.md).

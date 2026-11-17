@@ -305,22 +305,3 @@ git checkout main
 git merge --no-ff ui/redesign -m "feat(client): redesign with shadcn-vue and Anviil design tokens"
 git push
 ```
-
----
-
-## Notes for DECISIONS.md
-
-Filled in during R4.
-
-- **Trade-off:** the UI depends on shadcn-vue (copied-in components over Reka UI) in exchange for accessible, consistent primitives (focus traps, combobox, calendar, drawer) that would otherwise be hand-written and hand-tested.
-- **New dependencies** (all in `package.json`, none removed in R4 because all are imported): `reka-ui`, `@vueuse/core`, `@lucide/vue`, `cn`, `class-variance-authority`, `@internationalized/date`, `tw-animate-css`, `@fontsource-variable/figtree`, `@fontsource-variable/geist-mono`. No `vaul-vue`, `clsx`, `tailwind-merge` or `sonner`.
-- **Trade-off:** forms use shadcn-vue's `Field` components with vee-validate 5.0.0-beta.1 and the raw Zod schema, not the documented `FormField` wrappers with `toTypedSchema`, because the wrappers target vee-validate 4.
-- **Cut:** dark mode (tokens ported, no toggle), translations, visual-regression and component tests.
-- **Decision:** the calendar file is generated in the browser (`lib/ics.ts`), so the server has no new endpoint.
-- **Deviation from Anviil's tokens:** `--input` is `oklch(0.6 0 0)` (Anviil 0.922, about 1.26:1 on white; now about 3.95:1) and `--ring` is `oklch(0.45 0 0)` (Anviil 0.708, about 2.59:1; now about 7.4:1), so field edges and the focus ring reach 3:1 (WCAG 1.4.11).
-- **Surprises:**
-  - `--brand`, `--brand-foreground`, `--accent-ember` and `--tint` are hex values in `style.css` (as in Anviil's file). That is the only place raw colours remain; components use the mapped tokens.
-  - R0 added `calendar`, `command`, `native-select` and `textarea`, which nothing used; R4 deleted them, plus `InputGroupTextarea` (it imported `textarea`).
-  - The base layer had `outline-ring/50`, an opacity modifier; changed to `outline-ring`.
-  - shadcn's default sizes are under 44 px (`h-10`, `h-8` calendar cells, `h-7` sm buttons), so tap targets are raised at call sites with `h-11 md:h-…`. The calendar day cell in `ui/` was edited for the same reason.
-  - The production bundle is over 500 kB (Vite warning); not split, as it is a test-sized app.

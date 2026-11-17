@@ -648,12 +648,29 @@ Click through search, booking and conflict once. Check that `data.json` is uncha
 
 Add an entry whenever you corrected, rejected or overrode something. Your best 2–3 go into `AI.md`. The "Check before committing" lists are where most of these come from.
 
-| #   | Task | What the AI produced                                                           | What I did instead                                                                                                 | Why                                                                     |
-| --- | ---- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| 1   | 1.2  | A test for service 102 at 09:30 that only asserted Anna wasn't in a 09:30 slot | Had it assert the exact slot starts before 10:00 (09:00 and 09:15, both Anna) and that 09:30 and 09:45 don't exist | The original passed even if the engine returned no morning slots at all |
-| 2   |      |                                                                                |                                                                                                                    |                                                                         |
-| 3   |      |                                                                                |                                                                                                                    |                                                                         |
-| 4   |      |                                                                                |                                                                                                                    |                                                                         |
+### 1. Task 1.2: a test that could not fail
+
+- **What the AI produced:** A test for service 102 at 09:30 that only asserted Anna wasn't in a 09:30 slot.
+- **What I did instead:** Had it assert the exact slot starts before 10:00 (09:00 and 09:15, both Anna) and that 09:30 and 09:45 don't exist.
+- **Why:** The original passed even if the engine returned no morning slots at all.
+
+### 2. Planning (chat): an uncomputed distance
+
+- **What the AI produced:** `docs/PLAN.md` gave the Medborgarplatsen to Salongens Massage distance as 1030 m, a figure that had not been computed.
+- **What I did instead:** The chat model recomputed it with an independent haversine (R = 6371 km) before the plan was sent: 1026 m. That value is now in the plan and the test.
+- **Why:** An expected value that is guessed is worse than none. Oracles must be computed. (AI catching AI, so it is not one of the headline cases.)
+
+### 3. R2, result cards: green checks, broken layout
+
+- **What the AI produced:** A result card that passed typecheck, tests and the build but had never been rendered. In the browser the day tabs, staff filter and time grid sat side by side in one row, the time buttons overlapped, and the selected day tab was white text on white.
+- **What I did instead:** Opened it in the browser, wrote a layout spec (one stacked column, a readable selected state) and sent it back to be fixed.
+- **Why:** Typecheck, tests and the build cannot see layout. Only looking at the page did.
+
+### 4. R1, What field: select behaviour in a free-text field
+
+- **What the AI produced:** A free-text search field built on Reka's Combobox, which has select semantics. Typed text snapped to a suggestion. The report said the design let free text still submit, but it had not been run in a browser.
+- **What I did instead:** Found it by typing in the browser. Required that the typed text always wins: no auto-highlight, no reset on blur, Enter submits what was typed. Had it fixed.
+- **Why:** The field needed autocomplete semantics, not select semantics, and the claim in the report had not been tested. |
 
 Likely candidates, judging by where models usually slip:
 
