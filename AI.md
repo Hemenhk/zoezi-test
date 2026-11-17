@@ -10,7 +10,7 @@
 - One task per Claude Code session, with the task prompt taken from `docs/PLAN.md` or `docs/REDESIGN.md`.
 - The expected slots in the plan were computed by hand and used as test oracles. The chat model also ran an independent Python simulation to check them, so there AI checked AI. Tests were never written by running the code and copying its output.
 - I read every report and every diff.
-- The backend and client tasks were committed one by one, after review. The redesign (R0 to R4) was reviewed task by task but committed afterwards, in six feature groups.
+- The backend and client tasks were committed one by one, after review. The redesign (R0 to R4) was reviewed task by task but committed afterwards, as two commits plus the merge.
 
 ## Where I overrode the AI
 
