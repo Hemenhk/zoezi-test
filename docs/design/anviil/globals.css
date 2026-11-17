@@ -1,0 +1,1758 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-board: var(--board-canvas);
+  --color-macro-protein: var(--macro-protein);
+  --color-macro-carbs: var(--macro-carbs);
+  --color-macro-fat: var(--macro-fat);
+  --color-allergen-fg: var(--allergen-fg);
+  --color-allergen-bg: var(--allergen-bg);
+  --color-diet-fg: var(--diet-fg);
+  --color-diet-bg: var(--diet-bg);
+  /* Helpers for the warm area. Fallbacks equal the old hard-coded values, so a use
+     outside the warm area still renders as before. */
+  --color-soft: var(--soft, #f7f7f5);
+  --color-pill: var(--pill, #f7f7f5);
+  --color-pill-foreground: var(--pill-foreground, inherit);
+  --color-overlay: var(--overlay, rgb(0 0 0 / 0.2));
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Meal builder surfaces and status hues */
+  --board-canvas: oklch(0.955 0.006 255);
+  --macro-protein: oklch(0.52 0.19 258);
+  --macro-carbs: oklch(0.55 0.12 175);
+  --macro-fat: oklch(0.52 0.19 305);
+  --allergen-fg: oklch(0.47 0.2 27);
+  --allergen-bg: oklch(0.955 0.035 25);
+  --diet-fg: oklch(0.44 0.1 68);
+  --diet-bg: oklch(0.955 0.06 88);
+  --background: oklch(1 0 0);
+  /* --background: #faf8f5; */
+  --brand: #1e1a16;
+  --brand-foreground: #faf8f5;
+  --accent-ember: #e0612b;
+  --tint: #f2ebe3;
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --radius: 0.875rem;
+  --sidebar: lab(98.26% 0 0);
+  --sidebar-foreground: lab(0% 0 0);
+  --sidebar-primary: lab(7.78201% -0.0000149012 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  /* Solid and noticeably darker than --sidebar so hover/active read clearly */
+  --sidebar-accent: oklch(0.92 0 0);
+  --sidebar-accent-foreground: lab(7.78201% -0.0000149012 0);
+  --sidebar-border: oklch(0.922 0 0 / 0.6);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --board-canvas: oklch(0.175 0.012 262);
+  --macro-protein: oklch(0.74 0.13 250);
+  --macro-carbs: oklch(0.76 0.12 172);
+  --macro-fat: oklch(0.75 0.14 305);
+  --allergen-fg: oklch(0.82 0.12 22);
+  --allergen-bg: oklch(0.3 0.07 25);
+  --diet-fg: oklch(0.86 0.12 85);
+  --diet-bg: oklch(0.3 0.06 78);
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.837 0.128 66.29);
+  --chart-2: oklch(0.705 0.213 47.604);
+  --chart-3: oklch(0.646 0.222 41.116);
+  --chart-4: oklch(0.553 0.195 38.402);
+  --chart-5: oklch(0.47 0.157 37.304);
+  --sidebar: oklch(0.16 0 0 / 0.75);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(1 0 0 / 0.06);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Circular reveal (Chrome, Edge) */
+::view-transition-old(root) {
+  animation: none;
+}
+::view-transition-new(root) {
+  animation: theme-reveal 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0px at var(--x) var(--y));
+  }
+  to {
+    clip-path: circle(var(--r) at var(--x) var(--y));
+  }
+}
+
+/* Fallback for Firefox / Safari */
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 600ms ease,
+    border-color 600ms ease,
+    color 600ms ease,
+    fill 600ms ease,
+    stroke 600ms ease,
+    box-shadow 600ms ease !important;
+}
+
+/* Reserve space for the fixed mobile app-download banner (AppDownloadBanner) */
+@media (max-width: 767px) {
+  html[data-app-banner] main[data-slot='sidebar-inset'] {
+    padding-bottom: 4.5rem;
+  }
+}
+
+/* Register page offer card: unfurls from the top-right corner */
+@keyframes offer-unfurl {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    clip-path: inset(-1rem -1rem -1rem -1rem);
+  }
+}
+
+.animate-offer-unfurl {
+  animation: offer-unfurl 400ms ease-out 600ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-offer-unfurl {
+    animation: none;
+  }
+}
+
+/* Thin, still findable scrollbars (meal builder panels) */
+.thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted-foreground) 55%, transparent) transparent;
+}
+.thin-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted-foreground) 55%, transparent);
+  border-radius: 9999px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ==========================================================================
+   Warm area ("oat and sage"): dashboard + admin only.
+
+   The scope is the attribute html[data-area="warm"], set by <WarmScope /> from
+   the (dashboard) and admin layouts and removed when they unmount. It sits on
+   <html> (not a layout div) so portalled dialogs, sheets, popovers, select
+   menus and toasts, which render on <body>, inherit it. Nothing above this
+   block is changed, so (main), (auth) and (client-dashboard) are untouched.
+   Dark mode = next-themes' class on <html>, hence html[data-area="warm"].dark.
+   ========================================================================== */
+html[data-area='warm'] {
+  --background: #faf6f0;
+  --foreground: #2b2520;
+  --card: #fffdf9;
+  --card-foreground: #2b2520;
+  --popover: #fffdf9;
+  --popover-foreground: #2b2520;
+  --primary: #3f5e3c;
+  --primary-hover: #36512f;
+  --primary-foreground: #ffffff;
+  --secondary: #f1eadf;
+  --secondary-foreground: #2b2520;
+  --muted: #f1eadf;
+  --muted-foreground: #6f6558;
+  --accent: #f6e3cc;
+  --accent-foreground: #6b4420;
+  --destructive: #b3261e;
+  --border: #e4dacb;
+  /* Darker than --border on purpose: a field's edge needs 3:1 (WCAG 1.4.11) */
+  --input: #8c8272;
+  --ring: #3f5e3c;
+
+  --sidebar: #f5efe5;
+  --sidebar-foreground: #2b2520;
+  --sidebar-primary: #3f5e3c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f6e3cc;
+  --sidebar-accent-foreground: #6b4420;
+  --sidebar-border: #e4dacb;
+  --sidebar-ring: #3f5e3c;
+
+  /* Meal builder: safety colours stay red / amber, apart from sage + apricot */
+  --board-canvas: #f3ece1;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+
+  /* Meal types. Per type: tint = row background, strong = bar segment and
+     left strip, text = readable colour on both. Decoration plus an icon and the
+     name: type is never carried by colour alone. Apricot / sage / butter /
+     orchid, kept away from the allergen red, diet amber and success green. */
+  --meal-breakfast-tint: #fedfb9;
+  --meal-breakfast-strong: #db703b;
+  --meal-breakfast-text: #21110a;
+  --meal-lunch-tint: #d0ebd5;
+  --meal-lunch-strong: #699873;
+  --meal-lunch-text: #0c1a0f;
+  --meal-snack-tint: #eeefc1;
+  --meal-snack-strong: #9c8e1e;
+  --meal-snack-text: #191606;
+  --meal-dinner-tint: #eed8e8;
+  --meal-dinner-strong: #b37ca3;
+  --meal-dinner-text: #1f111b;
+  /* Field edge on a meal row: the base input edge is under 3:1 on the tints */
+  --meal-field-border: #6f6558;
+
+  /* Buttons. One set per state, so a later theme picker can swap them. */
+  --primary-active: #2e4528;
+  --btn-secondary-bg: #ede3d3;
+  --btn-secondary-fg: #2b2520;
+  --btn-secondary-hover: #e4d8c5;
+  --btn-secondary-active: #dacdb7;
+  --btn-outline-bg: #fffdf9;
+  --btn-outline-hover: #f1eadf;
+  --btn-outline-active: #e8dfd0;
+  --btn-ghost-hover: #f1eadf;
+  --btn-ghost-active: #eee6d9;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --btn-disabled-bg: #e8e0d3;
+  --btn-disabled-fg: #766b5d;
+  --toggle-on-bg: #f6e3cc;
+  --toggle-on-fg: #6b4420;
+
+  /* Replacements for old hard-coded greys/whites */
+  --soft: #f4ede2;
+  --pill: #ede3d3;
+  --pill-foreground: #2b2520;
+  --overlay: rgb(70 48 28 / 0.16);
+
+  /* Warm shadow ink (low-opacity brown instead of black) */
+  --warm-shadow: 74 50 26;
+  --shadow-soft:
+    0 1px 2px rgb(var(--warm-shadow) / 0.06), 0 6px 18px -6px rgb(var(--warm-shadow) / 0.12);
+  --shadow-lift:
+    0 2px 4px rgb(var(--warm-shadow) / 0.08), 0 14px 32px -10px rgb(var(--warm-shadow) / 0.2);
+}
+
+html[data-area='warm'].dark {
+  --background: #1f1b17;
+  --foreground: #f3ebdd;
+  --card: #28231e;
+  --card-foreground: #f3ebdd;
+  --popover: #28231e;
+  --popover-foreground: #f3ebdd;
+  --primary: #9dc08f;
+  --primary-hover: #b0d0a3;
+  --primary-foreground: #1b2a18;
+  --secondary: #332d26;
+  --secondary-foreground: #f3ebdd;
+  --muted: #332d26;
+  --muted-foreground: #b5a998;
+  --accent: #4a3722;
+  --accent-foreground: #f2d9b8;
+  --destructive: #f5a9a1;
+  --border: #44392f;
+  --input: #7d7061;
+  --ring: #9dc08f;
+
+  --sidebar: #241f1a;
+  --sidebar-foreground: #f3ebdd;
+  --sidebar-primary: #9dc08f;
+  --sidebar-primary-foreground: #1b2a18;
+  --sidebar-accent: #4a3722;
+  --sidebar-accent-foreground: #f2d9b8;
+  --sidebar-border: #44392f;
+  --sidebar-ring: #9dc08f;
+
+  --board-canvas: #1a1613;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+
+  --meal-breakfast-tint: #523717;
+  --meal-breakfast-strong: #b74f13;
+  --meal-breakfast-text: #fef2ed;
+  --meal-lunch-tint: #243c29;
+  --meal-lunch-strong: #4e7b57;
+  --meal-lunch-text: #f5fff7;
+  --meal-snack-tint: #3e3d0e;
+  --meal-snack-strong: #7f7301;
+  --meal-snack-text: #fefcf1;
+  --meal-dinner-tint: #422e3e;
+  --meal-dinner-strong: #8e6081;
+  --meal-dinner-text: #fcf1f9;
+  --meal-field-border: #a89c8a;
+
+  /* Secondary = light oat with dark text, so it never goes dark-on-dark */
+  --primary-active: #8cae7f;
+  --btn-secondary-bg: #e9dfd0;
+  --btn-secondary-fg: #2b2520;
+  --btn-secondary-hover: #f1e8da;
+  --btn-secondary-active: #ddd2c0;
+  --btn-outline-bg: #332d26;
+  --btn-outline-hover: #3f382f;
+  --btn-outline-active: #4a4238;
+  --btn-ghost-hover: #332d26;
+  --btn-ghost-active: #3f382f;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --btn-disabled-bg: #3a332b;
+  --btn-disabled-fg: #a89c8a;
+  --toggle-on-bg: #4a3722;
+  --toggle-on-fg: #f2d9b8;
+
+  --soft: #332d26;
+  --pill: #e9dfd0;
+  --pill-foreground: #2b2520;
+  --overlay: rgb(12 8 4 / 0.4);
+
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -6px rgb(0 0 0 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 14px 32px -10px rgb(0 0 0 / 0.55);
+}
+
+/* ==========================================================================
+   Theme picker. html[data-theme="sage|graphite|coastal|plum|cocoa|autumn|christmas|spring"] is a second
+   attribute next to data-area="warm" (set by <WarmScope />, see lib/theme-picker.ts).
+   Oat & Sage is the default and is the block above, unchanged: no data-theme,
+   an invalid one or data-theme="sage" all use it. Each other theme defines the
+   SAME full token set for light and dark. Both of its blocks list every token,
+   because a theme-light block ties in specificity with the sage .dark block and
+   comes later in the file. Safety colours (allergen red, diet amber, destructive)
+   are the same hues in every theme. Generated and contrast-checked; values and
+   the checks are in docs/theme-picker-report.md and docs/theme-picker-2-report.md.
+   ========================================================================== */
+html[data-area='warm'][data-theme='coastal'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #f4f7f7;
+  --foreground: #0f1e1e;
+  --card: #fbfdfd;
+  --card-foreground: #0f1e1e;
+  --popover: #fbfdfd;
+  --popover-foreground: #0f1e1e;
+  --primary: #2f5d62;
+  --primary-hover: #235257;
+  --primary-foreground: #ffffff;
+  --secondary: #e8ebeb;
+  --secondary-foreground: #0f1e1e;
+  --muted: #e8ebeb;
+  --muted-foreground: #536868;
+  --accent: #d8ebec;
+  --accent-foreground: #03464a;
+  --border: #d6d9d9;
+  --input: #758b8b;
+  --ring: #2f5d62;
+  --sidebar: #f0f3f3;
+  --sidebar-foreground: #0f1e1e;
+  --sidebar-primary: #2f5d62;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d8ebec;
+  --sidebar-accent-foreground: #03464a;
+  --sidebar-border: #d6d9d9;
+  --sidebar-ring: #2f5d62;
+  --board-canvas: #ecefef;
+  --meal-breakfast-tint: #a2eef2;
+  --meal-breakfast-strong: #089da1;
+  --meal-breakfast-text: #001b1c;
+  --meal-lunch-tint: #dbebfe;
+  --meal-lunch-strong: #4d91dc;
+  --meal-lunch-text: #071728;
+  --meal-snack-tint: #e1d8fe;
+  --meal-snack-strong: #9a80d8;
+  --meal-snack-text: #181226;
+  --meal-dinner-tint: #fedff3;
+  --meal-dinner-strong: #c971ad;
+  --meal-dinner-text: #220e1c;
+  --meal-field-border: #536868;
+  --primary-active: #17474c;
+  --btn-secondary-bg: #e2e5e5;
+  --btn-secondary-fg: #0f1e1e;
+  --btn-secondary-hover: #dadddd;
+  --btn-secondary-active: #d0d3d3;
+  --btn-outline-bg: #fbfdfd;
+  --btn-outline-hover: #e8ebeb;
+  --btn-outline-active: #e0e3e3;
+  --btn-ghost-hover: #e8ebeb;
+  --btn-ghost-active: #e3e6e6;
+  --btn-disabled-bg: #dde0e0;
+  --btn-disabled-fg: #566767;
+  --toggle-on-bg: #d8ebec;
+  --toggle-on-fg: #03464a;
+  --soft: #eef1f1;
+  --pill: #e2e5e5;
+  --pill-foreground: #0f1e1e;
+  --overlay: rgb(20 52 54 / 0.16);
+  --warm-shadow: 20 52 54;
+}
+
+html[data-area='warm'][data-theme='coastal'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #14201f;
+  --foreground: #ddebea;
+  --card: #1b2726;
+  --card-foreground: #ddebea;
+  --popover: #1b2726;
+  --popover-foreground: #ddebea;
+  --primary: #8cc5c8;
+  --primary-hover: #9cd5d8;
+  --primary-foreground: #031a1b;
+  --secondary: #23302f;
+  --secondary-foreground: #ddebea;
+  --muted: #23302f;
+  --muted-foreground: #a0b2b0;
+  --accent: #103a3c;
+  --accent-foreground: #b8e9eb;
+  --border: #2f3b3a;
+  --input: #6d7e7d;
+  --ring: #8cc5c8;
+  --sidebar: #172322;
+  --sidebar-foreground: #ddebea;
+  --sidebar-primary: #8cc5c8;
+  --sidebar-primary-foreground: #031a1b;
+  --sidebar-accent: #103a3c;
+  --sidebar-accent-foreground: #b8e9eb;
+  --sidebar-border: #2f3b3a;
+  --sidebar-ring: #8cc5c8;
+  --board-canvas: #111d1c;
+  --meal-breakfast-tint: #003032;
+  --meal-breakfast-strong: #297a7e;
+  --meal-breakfast-text: #e6fafa;
+  --meal-lunch-tint: #163557;
+  --meal-lunch-strong: #2f74bb;
+  --meal-lunch-text: #f5f9fe;
+  --meal-snack-tint: #2c2047;
+  --meal-snack-strong: #7b60b2;
+  --meal-snack-text: #f6f3ff;
+  --meal-dinner-tint: #4b243f;
+  --meal-dinner-strong: #a5538c;
+  --meal-dinner-text: #fef1f9;
+  --meal-field-border: #91a3a1;
+  --primary-active: #7cb5b8;
+  --btn-secondary-bg: #d0e3e1;
+  --btn-secondary-fg: #142221;
+  --btn-secondary-hover: #ddf0ee;
+  --btn-secondary-active: #c0d2d0;
+  --btn-outline-bg: #23302f;
+  --btn-outline-hover: #2a3635;
+  --btn-outline-active: #313e3d;
+  --btn-ghost-hover: #23302f;
+  --btn-ghost-active: #2a3635;
+  --btn-disabled-bg: #273433;
+  --btn-disabled-fg: #97a9a7;
+  --toggle-on-bg: #103a3c;
+  --toggle-on-fg: #b8e9eb;
+  --soft: #23302f;
+  --pill: #d0e3e1;
+  --pill-foreground: #142221;
+  --overlay: rgb(4 10 11 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(4 10 11 / 0.3), 0 6px 18px -6px rgb(4 10 11 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(4 10 11 / 0.3), 0 14px 32px -10px rgb(4 10 11 / 0.55);
+}
+
+html[data-area='warm'][data-theme='plum'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #fbf5f6;
+  --foreground: #231719;
+  --card: #fffcfc;
+  --card-foreground: #231719;
+  --popover: #fffcfc;
+  --popover-foreground: #231719;
+  --primary: #6b3f5b;
+  --primary-hover: #5f3450;
+  --primary-foreground: #ffffff;
+  --secondary: #efe9ea;
+  --secondary-foreground: #231719;
+  --muted: #efe9ea;
+  --muted-foreground: #705e61;
+  --accent: #f3dde8;
+  --accent-foreground: #5a2a46;
+  --border: #ddd7d8;
+  --input: #948084;
+  --ring: #6b3f5b;
+  --sidebar: #f7f1f2;
+  --sidebar-foreground: #231719;
+  --sidebar-primary: #6b3f5b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3dde8;
+  --sidebar-accent-foreground: #5a2a46;
+  --sidebar-border: #ddd7d8;
+  --sidebar-ring: #6b3f5b;
+  --board-canvas: #f3edee;
+  --meal-breakfast-tint: #a4ebfd;
+  --meal-breakfast-strong: #089ab2;
+  --meal-breakfast-text: #001a20;
+  --meal-lunch-tint: #deeaff;
+  --meal-lunch-strong: #5c8dde;
+  --meal-lunch-text: #0b1628;
+  --meal-snack-tint: #e7d5fe;
+  --meal-snack-strong: #a57cd2;
+  --meal-snack-text: #1a1124;
+  --meal-dinner-tint: #fee0ed;
+  --meal-dinner-strong: #d06f9e;
+  --meal-dinner-text: #230e19;
+  --meal-field-border: #705e61;
+  --primary-active: #542a45;
+  --btn-secondary-bg: #e9e3e4;
+  --btn-secondary-fg: #231719;
+  --btn-secondary-hover: #e0dbdc;
+  --btn-secondary-active: #d7d1d2;
+  --btn-outline-bg: #fffcfc;
+  --btn-outline-hover: #efe9ea;
+  --btn-outline-active: #e7e1e2;
+  --btn-ghost-hover: #efe9ea;
+  --btn-ghost-active: #eae4e5;
+  --btn-disabled-bg: #e4dedf;
+  --btn-disabled-fg: #6e5f61;
+  --toggle-on-bg: #f3dde8;
+  --toggle-on-fg: #5a2a46;
+  --soft: #f5eff0;
+  --pill: #e9e3e4;
+  --pill-foreground: #231719;
+  --overlay: rgb(74 32 58 / 0.16);
+  --warm-shadow: 74 32 58;
+}
+
+html[data-area='warm'][data-theme='plum'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #211a1e;
+  --foreground: #f0e4ea;
+  --card: #282125;
+  --card-foreground: #f0e4ea;
+  --popover: #282125;
+  --popover-foreground: #f0e4ea;
+  --primary: #d9a7c2;
+  --primary-hover: #eab7d2;
+  --primary-foreground: #201019;
+  --secondary: #31292e;
+  --secondary-foreground: #f0e4ea;
+  --muted: #31292e;
+  --muted-foreground: #b8a9b1;
+  --accent: #442938;
+  --accent-foreground: #f8d1e5;
+  --border: #3d3539;
+  --input: #83767d;
+  --ring: #d9a7c2;
+  --sidebar: #241d21;
+  --sidebar-foreground: #f0e4ea;
+  --sidebar-primary: #d9a7c2;
+  --sidebar-primary-foreground: #201019;
+  --sidebar-accent: #442938;
+  --sidebar-accent-foreground: #f8d1e5;
+  --sidebar-border: #3d3539;
+  --sidebar-ring: #d9a7c2;
+  --board-canvas: #1e171b;
+  --meal-breakfast-tint: #002f38;
+  --meal-breakfast-strong: #2b7888;
+  --meal-breakfast-text: #e7f9fe;
+  --meal-lunch-tint: #1e3458;
+  --meal-lunch-strong: #4270bd;
+  --meal-lunch-text: #f0f6ff;
+  --meal-snack-tint: #311e44;
+  --meal-snack-strong: #845cac;
+  --meal-snack-text: #f7f3fe;
+  --meal-dinner-tint: #4e2439;
+  --meal-dinner-strong: #a84e7c;
+  --meal-dinner-text: #fef1f7;
+  --meal-field-border: #a89aa2;
+  --primary-active: #c997b2;
+  --btn-secondary-bg: #e8d9e1;
+  --btn-secondary-fg: #261c22;
+  --btn-secondary-hover: #f5e6ef;
+  --btn-secondary-active: #d8c9d1;
+  --btn-outline-bg: #31292e;
+  --btn-outline-hover: #373034;
+  --btn-outline-active: #3f373c;
+  --btn-ghost-hover: #31292e;
+  --btn-ghost-active: #373034;
+  --btn-disabled-bg: #352d31;
+  --btn-disabled-fg: #aea0a8;
+  --toggle-on-bg: #442938;
+  --toggle-on-fg: #f8d1e5;
+  --soft: #31292e;
+  --pill: #e8d9e1;
+  --pill-foreground: #261c22;
+  --overlay: rgb(15 6 12 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(15 6 12 / 0.3), 0 6px 18px -6px rgb(15 6 12 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(15 6 12 / 0.3), 0 14px 32px -10px rgb(15 6 12 / 0.55);
+}
+
+html[data-area='warm'][data-theme='graphite'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #f4f4f5;
+  --foreground: #1f1f22;
+  --card: #ffffff;
+  --card-foreground: #1f1f22;
+  --popover: #ffffff;
+  --popover-foreground: #1f1f22;
+  --primary: #3556c8;
+  --primary-hover: #2b49ba;
+  --primary-foreground: #ffffff;
+  --secondary: #e7e7e8;
+  --secondary-foreground: #1f1f22;
+  --muted: #e7e7e8;
+  --muted-foreground: #595960;
+  --accent: #e3e9fa;
+  --accent-foreground: #243b8f;
+  --border: #e2e2e4;
+  --input: #89898b;
+  --ring: #3556c8;
+  --sidebar: #ededef;
+  --sidebar-foreground: #1f1f22;
+  --sidebar-primary: #3556c8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e3e9fa;
+  --sidebar-accent-foreground: #243b8f;
+  --sidebar-border: #e2e2e4;
+  --sidebar-ring: #3556c8;
+  --board-canvas: #ededee;
+  --meal-breakfast-tint: #d0edee;
+  --meal-breakfast-strong: #4a9599;
+  --meal-breakfast-text: #031a1b;
+  --meal-lunch-tint: #d9e8fb;
+  --meal-lunch-strong: #6c8db8;
+  --meal-lunch-text: #0c1723;
+  --meal-snack-tint: #e7e3f9;
+  --meal-snack-strong: #8f83b5;
+  --meal-snack-text: #171322;
+  --meal-dinner-tint: #f6dfeb;
+  --meal-dinner-strong: #af7b98;
+  --meal-dinner-text: #201019;
+  --meal-field-border: #595960;
+  --primary-active: #223dad;
+  --btn-secondary-bg: #dfdfe0;
+  --btn-secondary-fg: #1f1f22;
+  --btn-secondary-hover: #d6d6d7;
+  --btn-secondary-active: #cbcbcc;
+  --btn-outline-bg: #ffffff;
+  --btn-outline-hover: #e7e7e8;
+  --btn-outline-active: #dfdfe0;
+  --btn-ghost-hover: #e7e7e8;
+  --btn-ghost-active: #e1e1e2;
+  --btn-disabled-bg: #e1e1e2;
+  --btn-disabled-fg: #7e7e80;
+  --toggle-on-bg: #e3e9fa;
+  --toggle-on-fg: #243b8f;
+  --soft: #eeeeef;
+  --pill: #dfdfe0;
+  --pill-foreground: #1f1f22;
+  --overlay: rgb(35 45 71 / 0.16);
+  --warm-shadow: 35 45 71;
+}
+
+html[data-area='warm'][data-theme='graphite'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #1e1e1e;
+  --foreground: #e6e6e6;
+  --card: #262626;
+  --card-foreground: #e6e6e6;
+  --popover: #262626;
+  --popover-foreground: #e6e6e6;
+  --primary: #7b9aee;
+  --primary-hover: #87a7fc;
+  --primary-foreground: #0f1530;
+  --secondary: #323232;
+  --secondary-foreground: #e6e6e6;
+  --muted: #323232;
+  --muted-foreground: #b2b2b2;
+  --accent: #2b3555;
+  --accent-foreground: #c9d4f7;
+  --border: #333333;
+  --input: #727272;
+  --ring: #6c8fea;
+  --sidebar: #1b1b1b;
+  --sidebar-foreground: #e6e6e6;
+  --sidebar-primary: #7b9aee;
+  --sidebar-primary-foreground: #0f1530;
+  --sidebar-accent: #2b3555;
+  --sidebar-accent-foreground: #c9d4f7;
+  --sidebar-border: #333333;
+  --sidebar-ring: #6c8fea;
+  --board-canvas: #181818;
+  --meal-breakfast-tint: #0e2c2d;
+  --meal-breakfast-strong: #2c7a7e;
+  --meal-breakfast-text: #f6fbfc;
+  --meal-lunch-tint: #1b2737;
+  --meal-lunch-strong: #52729b;
+  --meal-lunch-text: #f7fafe;
+  --meal-snack-tint: #282336;
+  --meal-snack-strong: #756999;
+  --meal-snack-text: #faf9fe;
+  --meal-dinner-tint: #331f2a;
+  --meal-dinner-strong: #92617d;
+  --meal-dinner-text: #fdf9fb;
+  --meal-field-border: #aaaaaa;
+  --primary-active: #7291e4;
+  --btn-secondary-bg: #e2e2e2;
+  --btn-secondary-fg: #1f1f22;
+  --btn-secondary-hover: #efefef;
+  --btn-secondary-active: #d5d5d5;
+  --btn-outline-bg: #323232;
+  --btn-outline-hover: #393939;
+  --btn-outline-active: #404040;
+  --btn-ghost-hover: #323232;
+  --btn-ghost-active: #393939;
+  --btn-disabled-bg: #373737;
+  --btn-disabled-fg: #858585;
+  --toggle-on-bg: #2b3555;
+  --toggle-on-fg: #c9d4f7;
+  --soft: #323232;
+  --pill: #e2e2e2;
+  --pill-foreground: #1f1f22;
+  --overlay: rgb(7 6 2 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(7 6 2 / 0.3), 0 6px 18px -6px rgb(7 6 2 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(7 6 2 / 0.3), 0 14px 32px -10px rgb(7 6 2 / 0.55);
+}
+
+html[data-area='warm'][data-theme='cocoa'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #f8f3ee;
+  --foreground: #211911;
+  --card: #fffcf9;
+  --card-foreground: #211911;
+  --popover: #fffcf9;
+  --popover-foreground: #211911;
+  --primary: #6a4b3a;
+  --primary-hover: #5e4030;
+  --primary-foreground: #ffffff;
+  --secondary: #ece7e2;
+  --secondary-foreground: #211911;
+  --muted: #ece7e2;
+  --muted-foreground: #6d6154;
+  --accent: #ebddd0;
+  --accent-foreground: #593301;
+  --border: #dad5d0;
+  --input: #8f8375;
+  --ring: #6a4b3a;
+  --sidebar: #f4efea;
+  --sidebar-foreground: #211911;
+  --sidebar-primary: #6a4b3a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ebddd0;
+  --sidebar-accent-foreground: #593301;
+  --sidebar-border: #dad5d0;
+  --sidebar-ring: #6a4b3a;
+  --board-canvas: #f0ebe6;
+  --meal-breakfast-tint: #a2edf6;
+  --meal-breakfast-strong: #0b9ca7;
+  --meal-breakfast-text: #001b1e;
+  --meal-lunch-tint: #dbecfe;
+  --meal-lunch-strong: #468fd8;
+  --meal-lunch-text: #071727;
+  --meal-snack-tint: #e0d8fe;
+  --meal-snack-strong: #957ed6;
+  --meal-snack-text: #171226;
+  --meal-dinner-tint: #fedff3;
+  --meal-dinner-strong: #c66eaa;
+  --meal-dinner-text: #220e1c;
+  --meal-field-border: #6d6154;
+  --primary-active: #533625;
+  --btn-secondary-bg: #e6e1dc;
+  --btn-secondary-fg: #211911;
+  --btn-secondary-hover: #ded9d4;
+  --btn-secondary-active: #d4cfca;
+  --btn-outline-bg: #fffcf9;
+  --btn-outline-hover: #ece7e2;
+  --btn-outline-active: #e4dfda;
+  --btn-ghost-hover: #ece7e2;
+  --btn-ghost-active: #e7e2de;
+  --btn-disabled-bg: #e1dcd7;
+  --btn-disabled-fg: #6b6157;
+  --toggle-on-bg: #ebddd0;
+  --toggle-on-fg: #593301;
+  --soft: #f2ede8;
+  --pill: #e6e1dc;
+  --pill-foreground: #211911;
+  --overlay: rgb(72 46 28 / 0.16);
+  --warm-shadow: 72 46 28;
+}
+
+html[data-area='warm'][data-theme='cocoa'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #1e1815;
+  --foreground: #f1e5df;
+  --card: #251f1c;
+  --card-foreground: #f1e5df;
+  --popover: #251f1c;
+  --popover-foreground: #f1e5df;
+  --primary: #d4b49e;
+  --primary-hover: #e4c4ae;
+  --primary-foreground: #201208;
+  --secondary: #2e2724;
+  --secondary-foreground: #f1e5df;
+  --muted: #2e2724;
+  --muted-foreground: #b9aaa3;
+  --accent: #432e19;
+  --accent-foreground: #f6d8bc;
+  --border: #39332f;
+  --input: #857770;
+  --ring: #d4b49e;
+  --sidebar: #211b18;
+  --sidebar-foreground: #f1e5df;
+  --sidebar-primary: #d4b49e;
+  --sidebar-primary-foreground: #201208;
+  --sidebar-accent: #432e19;
+  --sidebar-accent-foreground: #f6d8bc;
+  --sidebar-border: #39332f;
+  --sidebar-ring: #d4b49e;
+  --board-canvas: #1b1512;
+  --meal-breakfast-tint: #002f34;
+  --meal-breakfast-strong: #26767e;
+  --meal-breakfast-text: #e7f9fc;
+  --meal-lunch-tint: #143656;
+  --meal-lunch-strong: #2a75ba;
+  --meal-lunch-text: #f3f9ff;
+  --meal-snack-tint: #2c2047;
+  --meal-snack-strong: #775db0;
+  --meal-snack-text: #f5f3fe;
+  --meal-dinner-tint: #4b243f;
+  --meal-dinner-strong: #a25089;
+  --meal-dinner-text: #fef1f9;
+  --meal-field-border: #a99b94;
+  --primary-active: #c4a48f;
+  --btn-secondary-bg: #eadad3;
+  --btn-secondary-fg: #271c17;
+  --btn-secondary-hover: #f7e8e0;
+  --btn-secondary-active: #d9cac3;
+  --btn-outline-bg: #2e2724;
+  --btn-outline-hover: #342e2a;
+  --btn-outline-active: #3c3532;
+  --btn-ghost-hover: #2e2724;
+  --btn-ghost-active: #342e2a;
+  --btn-disabled-bg: #322b28;
+  --btn-disabled-fg: #b0a19a;
+  --toggle-on-bg: #432e19;
+  --toggle-on-fg: #f6d8bc;
+  --soft: #2e2724;
+  --pill: #eadad3;
+  --pill-foreground: #271c17;
+  --overlay: rgb(14 9 6 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(14 9 6 / 0.3), 0 6px 18px -6px rgb(14 9 6 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(14 9 6 / 0.3), 0 14px 32px -10px rgb(14 9 6 / 0.55);
+}
+
+html[data-area='warm'][data-theme='autumn'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #faf2e6;
+  --foreground: #2a2118;
+  --card: #fffbf4;
+  --card-foreground: #2a2118;
+  --popover: #fffbf4;
+  --popover-foreground: #2a2118;
+  --primary: #5c5a22;
+  --primary-hover: #514f15;
+  --primary-foreground: #ffffff;
+  --secondary: #eee5da;
+  --secondary-foreground: #2a2118;
+  --muted: #eee5da;
+  --muted-foreground: #655747;
+  --accent: #f2dfc4;
+  --accent-foreground: #6a3c14;
+  --border: #e5d8c3;
+  --input: #8e857b;
+  --ring: #5c5a22;
+  --sidebar: #f3eadb;
+  --sidebar-foreground: #2a2118;
+  --sidebar-primary: #5c5a22;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f2dfc4;
+  --sidebar-accent-foreground: #6a3c14;
+  --sidebar-border: #e5d8c3;
+  --sidebar-ring: #5c5a22;
+  --board-canvas: #f3ebdf;
+  --meal-breakfast-tint: #fbe1cc;
+  --meal-breakfast-strong: #b47f51;
+  --meal-breakfast-text: #201307;
+  --meal-lunch-tint: #e3eacd;
+  --meal-lunch-strong: #838f4e;
+  --meal-lunch-text: #151808;
+  --meal-snack-tint: #fadcef;
+  --meal-snack-strong: #b1769d;
+  --meal-snack-text: #1f111a;
+  --meal-dinner-tint: #d2eaff;
+  --meal-dinner-strong: #588fbc;
+  --meal-dinner-text: #0a1723;
+  --meal-field-border: #655747;
+  --primary-active: #464407;
+  --btn-secondary-bg: #e5ddd1;
+  --btn-secondary-fg: #2a2118;
+  --btn-secondary-hover: #dcd4c9;
+  --btn-secondary-active: #d0c9be;
+  --btn-outline-bg: #fffbf4;
+  --btn-outline-hover: #eee5da;
+  --btn-outline-active: #e6ddd2;
+  --btn-ghost-hover: #eee5da;
+  --btn-ghost-active: #e8dfd4;
+  --btn-disabled-bg: #e7dfd3;
+  --btn-disabled-fg: #837b70;
+  --toggle-on-bg: #f2dfc4;
+  --toggle-on-fg: #6a3c14;
+  --soft: #f4ece0;
+  --pill: #e5ddd1;
+  --pill-foreground: #2a2118;
+  --overlay: rgb(49 47 15 / 0.16);
+  --warm-shadow: 49 47 15;
+}
+
+html[data-area='warm'][data-theme='autumn'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #1f1913;
+  --foreground: #f1e7d8;
+  --card: #29221a;
+  --card-foreground: #f1e7d8;
+  --popover: #29221a;
+  --popover-foreground: #f1e7d8;
+  --primary: #bbba63;
+  --primary-hover: #c8c770;
+  --primary-foreground: #1f1e08;
+  --secondary: #352e25;
+  --secondary-foreground: #f1e7d8;
+  --muted: #352e25;
+  --muted-foreground: #bcae9b;
+  --accent: #4a3418;
+  --accent-foreground: #f2d9b8;
+  --border: #40362a;
+  --input: #777066;
+  --ring: #bbba63;
+  --sidebar: #1b1510;
+  --sidebar-foreground: #f1e7d8;
+  --sidebar-primary: #bbba63;
+  --sidebar-primary-foreground: #1f1e08;
+  --sidebar-accent: #4a3418;
+  --sidebar-accent-foreground: #f2d9b8;
+  --sidebar-border: #40362a;
+  --sidebar-ring: #bbba63;
+  --board-canvas: #19140f;
+  --meal-breakfast-tint: #36210d;
+  --meal-breakfast-strong: #946233;
+  --meal-breakfast-text: #fdf9f6;
+  --meal-lunch-tint: #24290e;
+  --meal-lunch-strong: #677332;
+  --meal-lunch-text: #fafbf6;
+  --meal-snack-tint: #351d2d;
+  --meal-snack-strong: #935b81;
+  --meal-snack-text: #fdf9fb;
+  --meal-dinner-tint: #12283b;
+  --meal-dinner-strong: #3c729e;
+  --meal-dinner-text: #f7fbfe;
+  --meal-field-border: #b2a99d;
+  --primary-active: #b2b059;
+  --btn-secondary-bg: #e7dcd0;
+  --btn-secondary-fg: #1c140c;
+  --btn-secondary-hover: #f4e9dd;
+  --btn-secondary-active: #dacfc3;
+  --btn-outline-bg: #352e25;
+  --btn-outline-hover: #3d352c;
+  --btn-outline-active: #443d33;
+  --btn-ghost-hover: #352e25;
+  --btn-ghost-active: #3d352c;
+  --btn-disabled-bg: #3b342b;
+  --btn-disabled-fg: #888076;
+  --toggle-on-bg: #4a3418;
+  --toggle-on-fg: #f2d9b8;
+  --soft: #352e25;
+  --pill: #e7dcd0;
+  --pill-foreground: #1c140c;
+  --overlay: rgb(8 5 3 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(8 5 3 / 0.3), 0 6px 18px -6px rgb(8 5 3 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(8 5 3 / 0.3), 0 14px 32px -10px rgb(8 5 3 / 0.55);
+}
+
+html[data-area='warm'][data-theme='christmas'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #f7f9f8;
+  --foreground: #14201e;
+  --card: #ffffff;
+  --card-foreground: #14201e;
+  --popover: #ffffff;
+  --popover-foreground: #14201e;
+  --primary: #1f4a44;
+  --primary-hover: #133f3a;
+  --primary-foreground: #ffffff;
+  --secondary: #e9eceb;
+  --secondary-foreground: #14201e;
+  --muted: #e9eceb;
+  --muted-foreground: #53605c;
+  --accent: #dde9ee;
+  --accent-foreground: #23414f;
+  --border: #d9e0de;
+  --input: #858c8b;
+  --ring: #1f4a44;
+  --sidebar: #eef3f1;
+  --sidebar-foreground: #14201e;
+  --sidebar-primary: #1f4a44;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dde9ee;
+  --sidebar-accent-foreground: #23414f;
+  --sidebar-border: #d9e0de;
+  --sidebar-ring: #1f4a44;
+  --board-canvas: #eff1f0;
+  --meal-breakfast-tint: #d0edec;
+  --meal-breakfast-strong: #479a9a;
+  --meal-breakfast-text: #031a1a;
+  --meal-lunch-tint: #d6e9f9;
+  --meal-lunch-strong: #6291ba;
+  --meal-lunch-text: #0a1723;
+  --meal-snack-tint: #e6e3f9;
+  --meal-snack-strong: #9086bc;
+  --meal-snack-text: #161323;
+  --meal-dinner-tint: #f5dfec;
+  --meal-dinner-strong: #b37d9e;
+  --meal-dinner-text: #1f101a;
+  --meal-field-border: #53605c;
+  --primary-active: #06352f;
+  --btn-secondary-bg: #e0e3e2;
+  --btn-secondary-fg: #14201e;
+  --btn-secondary-hover: #d7dad9;
+  --btn-secondary-active: #cccfce;
+  --btn-outline-bg: #ffffff;
+  --btn-outline-hover: #e9eceb;
+  --btn-outline-active: #e0e4e3;
+  --btn-ghost-hover: #e9eceb;
+  --btn-ghost-active: #e3e6e5;
+  --btn-disabled-bg: #e3e5e4;
+  --btn-disabled-fg: #79817f;
+  --toggle-on-bg: #dde9ee;
+  --toggle-on-fg: #23414f;
+  --soft: #f0f3f2;
+  --pill: #e0e3e2;
+  --pill-foreground: #14201e;
+  --overlay: rgb(5 54 48 / 0.16);
+  --warm-shadow: 5 54 48;
+}
+
+html[data-area='warm'][data-theme='christmas'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #121c1b;
+  --foreground: #e3eeec;
+  --card: #192625;
+  --card-foreground: #e3eeec;
+  --popover: #192625;
+  --popover-foreground: #e3eeec;
+  --primary: #8cd0c6;
+  --primary-hover: #99ddd3;
+  --primary-foreground: #08201c;
+  --secondary: #253231;
+  --secondary-foreground: #e3eeec;
+  --muted: #253231;
+  --muted-foreground: #a3b6b2;
+  --accent: #1f3a44;
+  --accent-foreground: #cfe6ee;
+  --border: #2a3a38;
+  --input: #6a7473;
+  --ring: #8cd0c6;
+  --sidebar: #0f1817;
+  --sidebar-foreground: #e3eeec;
+  --sidebar-primary: #8cd0c6;
+  --sidebar-primary-foreground: #08201c;
+  --sidebar-accent: #1f3a44;
+  --sidebar-accent-foreground: #cfe6ee;
+  --sidebar-border: #2a3a38;
+  --sidebar-ring: #8cd0c6;
+  --board-canvas: #0e1616;
+  --meal-breakfast-tint: #0e2c2c;
+  --meal-breakfast-strong: #217979;
+  --meal-breakfast-text: #f6fbfb;
+  --meal-lunch-tint: #172836;
+  --meal-lunch-strong: #437298;
+  --meal-lunch-text: #f7fbfe;
+  --meal-snack-tint: #272336;
+  --meal-snack-strong: #70679a;
+  --meal-snack-text: #faf9fe;
+  --meal-dinner-tint: #32202b;
+  --meal-dinner-strong: #915d7d;
+  --meal-dinner-text: #fdf9fb;
+  --meal-field-border: #a4afad;
+  --primary-active: #83c6bc;
+  --btn-secondary-bg: #d0e3e0;
+  --btn-secondary-fg: #0b1918;
+  --btn-secondary-hover: #ddf0ed;
+  --btn-secondary-active: #c3d6d3;
+  --btn-outline-bg: #253231;
+  --btn-outline-hover: #2d3a38;
+  --btn-outline-active: #344140;
+  --btn-ghost-hover: #253231;
+  --btn-ghost-active: #2d3a38;
+  --btn-disabled-bg: #2b3837;
+  --btn-disabled-fg: #7a8584;
+  --toggle-on-bg: #1f3a44;
+  --toggle-on-fg: #cfe6ee;
+  --soft: #253231;
+  --pill: #d0e3e0;
+  --pill-foreground: #0b1918;
+  --overlay: rgb(2 7 6 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(2 7 6 / 0.3), 0 6px 18px -6px rgb(2 7 6 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(2 7 6 / 0.3), 0 14px 32px -10px rgb(2 7 6 / 0.55);
+}
+
+html[data-area='warm'][data-theme='spring'] {
+  --destructive: #b3261e;
+  --allergen-fg: #a8231b;
+  --allergen-bg: #f7c6c0;
+  --diet-fg: #5c3b00;
+  --diet-bg: #ffd966;
+  --btn-destructive-bg: #f8e5e0;
+  --btn-destructive-fg: #a8231b;
+  --btn-destructive-hover: #f3d6cf;
+  --btn-destructive-active: #ecc6bd;
+  --background: #f8faf4;
+  --foreground: #1f2420;
+  --card: #ffffff;
+  --card-foreground: #1f2420;
+  --popover: #ffffff;
+  --popover-foreground: #1f2420;
+  --primary: #b34a77;
+  --primary-hover: #a63e6b;
+  --primary-foreground: #ffffff;
+  --secondary: #ebede7;
+  --secondary-foreground: #1f2420;
+  --muted: #ebede7;
+  --muted-foreground: #586058;
+  --accent: #fbe1ea;
+  --accent-foreground: #7a2c4f;
+  --border: #dee3d6;
+  --input: #8b8f8a;
+  --ring: #b34a77;
+  --sidebar: #f0f4ea;
+  --sidebar-foreground: #1f2420;
+  --sidebar-primary: #b34a77;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fbe1ea;
+  --sidebar-accent-foreground: #7a2c4f;
+  --sidebar-border: #dee3d6;
+  --sidebar-ring: #b34a77;
+  --board-canvas: #f0f3ed;
+  --meal-breakfast-tint: #d1ebfb;
+  --meal-breakfast-strong: #5595b9;
+  --meal-breakfast-text: #071822;
+  --meal-lunch-tint: #cceeef;
+  --meal-lunch-strong: #409a9f;
+  --meal-lunch-text: #031a1b;
+  --meal-snack-tint: #e7e2fc;
+  --meal-snack-strong: #9486c0;
+  --meal-snack-text: #171322;
+  --meal-dinner-tint: #fadde9;
+  --meal-dinner-strong: #b97b98;
+  --meal-dinner-text: #201018;
+  --meal-field-border: #586058;
+  --primary-active: #983160;
+  --btn-secondary-bg: #dcebf7;
+  --btn-secondary-fg: #1f2420;
+  --btn-secondary-hover: #d3e2ed;
+  --btn-secondary-active: #c8d6e1;
+  --btn-outline-bg: #ffffff;
+  --btn-outline-hover: #ebede7;
+  --btn-outline-active: #e3e5df;
+  --btn-ghost-hover: #ebede7;
+  --btn-ghost-active: #e5e7e1;
+  --btn-disabled-bg: #e4e7e1;
+  --btn-disabled-fg: #7c807b;
+  --toggle-on-bg: #fbe1ea;
+  --toggle-on-fg: #7a2c4f;
+  --soft: #fbf3d2;
+  --pill: #dcebf7;
+  --pill-foreground: #1f2420;
+  --overlay: rgb(66 35 47 / 0.16);
+  --warm-shadow: 66 35 47;
+}
+
+html[data-area='warm'][data-theme='spring'].dark {
+  --destructive: #f5a9a1;
+  --allergen-fg: #f8b4ac;
+  --allergen-bg: #5e2723;
+  --diet-fg: #f8da82;
+  --diet-bg: #5e4609;
+  --btn-destructive-bg: #4a2a27;
+  --btn-destructive-fg: #f5a9a1;
+  --btn-destructive-hover: #5a332f;
+  --btn-destructive-active: #693c37;
+  --background: #1b1a1d;
+  --foreground: #eeeaf0;
+  --card: #242327;
+  --card-foreground: #eeeaf0;
+  --popover: #242327;
+  --popover-foreground: #eeeaf0;
+  --primary: #f0a6c3;
+  --primary-hover: #feb3d0;
+  --primary-foreground: #2a0f1c;
+  --secondary: #302f33;
+  --secondary-foreground: #eeeaf0;
+  --muted: #302f33;
+  --muted-foreground: #b4afb9;
+  --accent: #4a2638;
+  --accent-foreground: #f8d2e1;
+  --border: #38363c;
+  --input: #747176;
+  --ring: #f0a6c3;
+  --sidebar: #171619;
+  --sidebar-foreground: #eeeaf0;
+  --sidebar-primary: #f0a6c3;
+  --sidebar-primary-foreground: #2a0f1c;
+  --sidebar-accent: #4a2638;
+  --sidebar-accent-foreground: #f8d2e1;
+  --sidebar-border: #38363c;
+  --sidebar-ring: #f0a6c3;
+  --board-canvas: #161517;
+  --meal-breakfast-tint: #112937;
+  --meal-breakfast-strong: #337496;
+  --meal-breakfast-text: #f6fbfe;
+  --meal-lunch-tint: #082c2e;
+  --meal-lunch-strong: #13797e;
+  --meal-lunch-text: #f6fbfc;
+  --meal-snack-tint: #282238;
+  --meal-snack-strong: #73659c;
+  --meal-snack-text: #faf9fe;
+  --meal-dinner-tint: #351e29;
+  --meal-dinner-strong: #965c78;
+  --meal-dinner-text: #fef8fb;
+  --meal-field-border: #afacb1;
+  --primary-active: #e69db9;
+  --btn-secondary-bg: #e0dbea;
+  --btn-secondary-fg: #17141e;
+  --btn-secondary-hover: #ede8f7;
+  --btn-secondary-active: #d3cedd;
+  --btn-outline-bg: #302f33;
+  --btn-outline-hover: #38363b;
+  --btn-outline-active: #3f3e42;
+  --btn-ghost-hover: #302f33;
+  --btn-ghost-active: #38363b;
+  --btn-disabled-bg: #363539;
+  --btn-disabled-fg: #848287;
+  --toggle-on-bg: #4a2638;
+  --toggle-on-fg: #f8d2e1;
+  --soft: #302f33;
+  --pill: #e0dbea;
+  --pill-foreground: #17141e;
+  --overlay: rgb(6 5 9 / 0.4);
+  --warm-shadow: 0 0 0;
+  --shadow-soft: 0 1px 2px rgb(6 5 9 / 0.3), 0 6px 18px -6px rgb(6 5 9 / 0.4);
+  --shadow-lift: 0 2px 4px rgb(6 5 9 / 0.3), 0 14px 32px -10px rgb(6 5 9 / 0.55);
+}
+
+/* Soft warm shadows: cards, popovers (selects, menus, dialogs, sheets), the
+   meal cards on the board and the drag overlay. Written through --tw-shadow so
+   the 1px ring those elements already have is kept. */
+html[data-area='warm'] [data-slot='card'],
+html[data-area='warm'] [data-meal-id] {
+  --tw-shadow: var(--shadow-soft);
+}
+html[data-area='warm'] [data-slot='popover-content'],
+html[data-area='warm'] [data-slot='select-content'],
+html[data-area='warm'] [data-slot='dropdown-menu-content'],
+html[data-area='warm'] [data-slot='dropdown-menu-sub-content'],
+html[data-area='warm'] [data-slot='dialog-content'],
+html[data-area='warm'] [data-slot='alert-dialog-content'],
+html[data-area='warm'] [data-slot='sheet-content'],
+html[data-area='warm'] [data-drag-overlay] {
+  --tw-shadow: var(--shadow-lift);
+}
+/* Toasts (sonner) are not Tailwind elements */
+html[data-area='warm'] [data-sonner-toast] {
+  box-shadow: var(--shadow-lift);
+}
+
+/* Softer, warm-tinted overlay behind dialogs and sheets */
+html[data-area='warm'] [data-slot='dialog-overlay'],
+html[data-area='warm'] [data-slot='alert-dialog-overlay'],
+html[data-area='warm'] [data-slot='sheet-overlay'] {
+  background-color: var(--overlay);
+}
+
+/* ==========================================================================
+   Buttons. Every variant and state takes its colours from scoped tokens, so
+   (main)/(auth) keep the stock look and a theme picker can swap the tokens.
+   The base variants use `dark:bg-input/30` and `bg-secondary`, which gave
+   dark text on a dark fill in dark mode; these rules out-rank them.
+   `.bg-pill` buttons are outline buttons restyled as secondary (dashboard
+   quick actions), so they follow the secondary tokens.
+   ========================================================================== */
+html[data-area='warm'] [data-slot='button'][data-variant='default']:not(:disabled):hover {
+  background-color: var(--primary-hover);
+}
+html[data-area='warm'] [data-slot='button'][data-variant='default']:not(:disabled):active {
+  background-color: var(--primary-active);
+}
+
+html[data-area='warm'] [data-slot='button'][data-variant='secondary'][class~='bg-secondary'],
+html[data-area='warm'] [data-slot='button'].bg-pill {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='secondary'][class~='bg-secondary']:not(:disabled):hover,
+html[data-area='warm'] [data-slot='button'].bg-pill:not(:disabled):hover,
+html[data-area='warm'] [data-slot='button'].bg-pill[aria-expanded='true'],
+html[data-area='warm']
+  [data-slot='button'][data-variant='secondary'][class~='bg-secondary'][aria-expanded='true'] {
+  background-color: var(--btn-secondary-hover);
+  color: var(--btn-secondary-fg);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='secondary'][class~='bg-secondary']:not(:disabled):active,
+html[data-area='warm'] [data-slot='button'].bg-pill:not(:disabled):active {
+  background-color: var(--btn-secondary-active);
+}
+
+html[data-area='warm']
+  [data-slot='button'][data-variant='outline'][class~='bg-background']:not(.bg-pill):not(
+    :disabled
+  ) {
+  background-color: var(--btn-outline-bg);
+  color: var(--foreground);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='outline'][class~='bg-background']:not(.bg-pill):not(
+    :disabled
+  ):hover,
+html[data-area='warm']
+  [data-slot='button'][data-variant='outline'][class~='bg-background']:not(
+    .bg-pill
+  )[aria-expanded='true'] {
+  background-color: var(--btn-outline-hover);
+  color: var(--foreground);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='outline'][class~='bg-background']:not(.bg-pill):not(
+    :disabled
+  ):active {
+  background-color: var(--btn-outline-active);
+}
+
+html[data-area='warm']
+  [data-slot='button'][data-variant='ghost'][class~='hover:bg-muted']:not(:disabled):hover,
+html[data-area='warm']
+  [data-slot='button'][data-variant='ghost'][class~='hover:bg-muted'][aria-expanded='true'] {
+  background-color: var(--btn-ghost-hover);
+  color: var(--foreground);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='ghost'][class~='hover:bg-muted']:not(:disabled):active {
+  background-color: var(--btn-ghost-active);
+}
+
+html[data-area='warm']
+  [data-slot='button'][data-variant='destructive'][class~='bg-destructive/10'] {
+  background-color: var(--btn-destructive-bg);
+  color: var(--btn-destructive-fg);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='destructive'][class~='bg-destructive/10']:not(
+    :disabled
+  ):hover {
+  background-color: var(--btn-destructive-hover);
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='destructive'][class~='bg-destructive/10']:not(
+    :disabled
+  ):active {
+  background-color: var(--btn-destructive-active);
+}
+
+html[data-area='warm'] [data-slot='button'][data-variant='link']:not(:disabled) {
+  color: var(--primary);
+}
+
+/* Disabled: a flat warm fill with muted text (3:1 or better), not the base's
+   50 % opacity, which dropped the label to about 2:1. Looks inactive, stays
+   readable. Ghost, link and outline keep no fill. */
+html[data-area='warm'] [data-slot='button'][data-variant]:disabled {
+  opacity: 1;
+  background-color: var(--btn-disabled-bg);
+  color: var(--btn-disabled-fg);
+  border-color: transparent;
+}
+html[data-area='warm']
+  :is([data-variant='ghost'], [data-variant='link'])[data-slot='button']:disabled {
+  background-color: transparent;
+}
+html[data-area='warm']
+  [data-slot='button'][data-variant='outline'][class~='bg-background']:disabled:not(.bg-pill) {
+  background-color: transparent;
+  border-color: color-mix(in oklab, var(--btn-disabled-fg) 55%, transparent);
+}
+
+/* ==========================================================================
+   Plan setup dialog: warm surfaces. The dialog is the card colour, the body
+   behind the section cards is the page colour, so the cards lift off it.
+   ========================================================================== */
+html[data-area='warm'] [data-setup-dialog] {
+  background-color: var(--card);
+}
+html[data-area='warm'] [data-setup-dialog] [data-setup-body] {
+  background-color: var(--background);
+}
+html[data-area='warm'] [data-setup-dialog] [data-setup-section] {
+  background-color: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--shadow-soft);
+}
+/* Locked / selected states: accent tint (the icon or check is in the markup) */
+html[data-area='warm']
+  [data-setup-dialog]
+  [data-slot='button'][data-variant][aria-pressed='true']:not(:disabled):not(:active),
+html[data-area='warm']
+  [data-setup-dialog]
+  [data-slot='button'][data-variant][aria-pressed='true']:not(:disabled):hover,
+html[data-area='warm'] [data-setup-dialog] [data-slot='toggle-group-item'][data-state='on'] {
+  background-color: var(--toggle-on-bg);
+  color: var(--toggle-on-fg);
+  border-color: var(--primary);
+}
+html[data-area='warm'] [data-setup-dialog] [data-slot='toggle-group-item'] {
+  color: var(--foreground);
+}
+html[data-area='warm'] [data-setup-dialog] [data-slot='toggle-group-item'][data-state='on'] {
+  color: var(--toggle-on-fg);
+}
+
+/* Meal rows: tint, 4 px strip in the strong colour, readable text. The
+   fields inside sit on the card colour so their edges keep 3:1. */
+html[data-area='warm'] [data-setup-dialog] [data-meal-row] {
+  background-color: var(--mt-tint);
+  color: var(--mt-text);
+  border-color: transparent;
+  box-shadow: inset 4px 0 0 var(--mt-strong);
+}
+html[data-area='warm']
+  [data-setup-dialog]
+  [data-meal-row]
+  :is([data-slot='input'], [data-slot='select-trigger']) {
+  background-color: var(--card);
+  color: var(--foreground);
+  border-color: var(--meal-field-border);
+}
+html[data-area='warm'] [data-setup-dialog] [data-meal-row] [data-meal-budget] {
+  color: var(--mt-text);
+}
+html[data-area='warm']
+  [data-setup-dialog]
+  [data-meal-row]
+  [data-slot='button'][data-variant='ghost']:not(:disabled) {
+  color: var(--mt-text);
+}
+html[data-area='warm']
+  [data-setup-dialog]
+  [data-meal-row]
+  [data-slot='button'][data-variant='ghost']:disabled {
+  color: var(--btn-disabled-fg);
+}
+
+/* Meal split bar segments */
+html[data-area='warm'] [data-meal-segment] {
+  background-color: var(--mt-strong);
+  color: var(--mt-text);
+}
+/* Divider handle: grip dots on a card-coloured knob */
+html[data-area='warm'] [data-split-knob] {
+  background-color: var(--card);
+  border-color: var(--foreground);
+  box-shadow: var(--shadow-soft);
+}
+html[data-area='warm'] [data-split-knob] [data-split-dot] {
+  background-color: var(--foreground);
+}
+html[data-area='warm'] [role='slider']:hover [data-split-knob] {
+  transform: scale(1.08);
+}
+html[data-area='warm'] [role='slider']:focus-visible [data-split-knob] {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+html[data-area='warm'] [role='slider']:active [data-split-knob] {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.12);
+}
+html[data-area='warm'] [role='slider']:active [data-split-knob] [data-split-dot] {
+  background-color: var(--primary-foreground);
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-area='warm'] [role='slider']:hover [data-split-knob],
+  html[data-area='warm'] [role='slider']:active [data-split-knob] {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Sidebar collapse. The width, the main-content gap and the position all
+   animate together through the sidebar's own transitions; reduced motion
+   turns them off, and so does the one-frame restore of the saved state.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html[data-area='warm'] [data-slot='sidebar-gap'],
+  html[data-area='warm'] [data-slot='sidebar-container'] {
+    transition: none;
+  }
+}
+html[data-area='warm'][data-sidebar-instant] [data-slot='sidebar-gap'],
+html[data-area='warm'][data-sidebar-instant] [data-slot='sidebar-container'] {
+  transition: none;
+}
+
+/* Focus: always the full-strength ring colour (3:1 on every surface). The
+   base styles use ring/50, which is too faint on cream. Invalid fields keep
+   their red ring. */
+html[data-area='warm'] :focus-visible:not([aria-invalid='true']) {
+  --tw-ring-color: var(--ring);
+  outline-color: var(--ring);
+}
+
+/* Sidebar: apricot tint (already from --sidebar-accent) + a sage indicator */
+html[data-area='warm'] [data-slot='sidebar-menu-button'][data-active='true'] {
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+/* Meal types, shared by the plan board rows and the plan setup dialog. The
+   hook is [data-meal-slot] (board) or [data-meal-type] (dialog). */
+html[data-area='warm'] [data-meal-slot='BREAKFAST'],
+html[data-area='warm'] [data-meal-type='BREAKFAST'] {
+  --mt-tint: var(--meal-breakfast-tint);
+  --mt-strong: var(--meal-breakfast-strong);
+  --mt-text: var(--meal-breakfast-text);
+}
+html[data-area='warm'] [data-meal-slot='LUNCH'],
+html[data-area='warm'] [data-meal-type='LUNCH'] {
+  --mt-tint: var(--meal-lunch-tint);
+  --mt-strong: var(--meal-lunch-strong);
+  --mt-text: var(--meal-lunch-text);
+}
+html[data-area='warm'] [data-meal-slot='SNACK'],
+html[data-area='warm'] [data-meal-type='SNACK'] {
+  --mt-tint: var(--meal-snack-tint);
+  --mt-strong: var(--meal-snack-strong);
+  --mt-text: var(--meal-snack-text);
+}
+html[data-area='warm'] [data-meal-slot='DINNER'],
+html[data-area='warm'] [data-meal-type='DINNER'] {
+  --mt-tint: var(--meal-dinner-tint);
+  --mt-strong: var(--meal-dinner-strong);
+  --mt-text: var(--meal-dinner-text);
+}
+/* Board row label: tint, readable text, 4 px strip in the strong colour */
+html[data-area='warm'] [data-meal-label][data-meal-slot] {
+  background-color: var(--mt-tint);
+  color: var(--mt-text);
+  box-shadow: inset 4px 0 0 var(--mt-strong);
+  padding-left: calc(var(--spacing) * 3);
+}
+/* Empty drop targets get a lighter wash of the same tint; a cell being
+   dragged over keeps the primary highlight (data-cell-state="over"). */
+html[data-area='warm'] [data-cell-state='empty'][data-meal-slot] {
+  background-color: color-mix(in oklab, var(--mt-tint) 45%, transparent);
+}

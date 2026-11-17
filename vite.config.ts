@@ -7,7 +7,10 @@ export default defineConfig({
   root: 'src/client',
   plugins: [vue(), tailwindcss()],
   resolve: {
-    alias: { '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)) },
+    alias: {
+      '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+      '@': fileURLToPath(new URL('./src/client', import.meta.url)),
+    },
   },
   server: {
     port: 5173,
