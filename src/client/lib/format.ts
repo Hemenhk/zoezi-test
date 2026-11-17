@@ -63,6 +63,29 @@ export function formatDayTime(apiIso: string): string {
   return `${formatDayLabel(localDateOf(apiIso))}, ${formatTime(apiIso)}`;
 }
 
+/**
+ * Accessible name for a slot button, e.g. "Fri 23 Oct, 09:00, Klassisk massage with Anna".
+ * `chosenStaffId` is the staff filter (null = any). The staff part names the person when one is
+ * chosen or only one can take the slot, says "any staff" when several can, and is left out when unknown.
+ */
+export function formatSlotLabel(
+  slot: { start: string; staffIds: number[] },
+  serviceName: string,
+  staff: { id: number; name: string }[],
+  chosenStaffId: number | null,
+): string {
+  const nameOf = (id: number) => staff.find((s) => s.id === id)?.name;
+  const who =
+    chosenStaffId !== null
+      ? nameOf(chosenStaffId)
+      : slot.staffIds.length > 1
+        ? 'any staff'
+        : slot.staffIds[0] !== undefined
+          ? nameOf(slot.staffIds[0])
+          : undefined;
+  return `${formatDayTime(slot.start)}, ${serviceName}${who ? ` with ${who}` : ''}`;
+}
+
 /** The venue-local hour (0-23) of an API timestamp. */
 export function localHour(apiIso: string): number {
   return Number(formatTime(apiIso).slice(0, 2));
@@ -86,4 +109,16 @@ export function formatDuration(minutes: number): string {
 /** Epoch milliseconds of an API timestamp, for comparing instants (never compare the strings). */
 export function epochOf(apiIso: string): number {
   return new Date(apiIso).getTime();
+}
+
+/** "23–29 Oct" within a month, "28 Oct – 3 Nov" across months, "23 Oct" for a single day. */
+export function formatDateRange(from: string, to: string): string {
+  if (from === to) return formatDayMonth(from);
+  const [fy, fm] = parts(from);
+  const [ty, tm] = parts(to);
+  if (fy === ty && fm === tm) {
+    const [, , fd] = parts(from);
+    return `${fd}–${formatDayMonth(to)}`;
+  }
+  return `${formatDayMonth(from)} – ${formatDayMonth(to)}`;
 }

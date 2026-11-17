@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import type { SearchResult, SlotDto } from '@shared/schemas';
-import { formatDayMonth, formatTime, formatWeekday, localHour } from '../lib/format';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { formatDayMonth, formatSlotLabel, formatTime, formatWeekday, localHour } from '../lib/format';
 
 export interface SlotSelection {
   result: SearchResult;
@@ -54,101 +58,101 @@ function showAll(groupKey: string) {
   expanded.value = { ...expanded.value, [`${activeDate.value}|${staffId.value}|${groupKey}`]: true };
 }
 
-// Roving tabindex: only the active tab is in the tab order; arrows move between enabled days.
-const tabEls = ref<HTMLButtonElement[]>([]);
-
-async function onTabKey(event: KeyboardEvent, index: number) {
-  const enabled = days.value.map((d, i) => (d.enabled ? i : -1)).filter((i) => i >= 0);
-  const pos = enabled.indexOf(index);
-  let target: number | undefined;
-  if (event.key === 'ArrowRight') target = enabled[(pos + 1) % enabled.length];
-  else if (event.key === 'ArrowLeft') target = enabled[(pos - 1 + enabled.length) % enabled.length];
-  else if (event.key === 'Home') target = enabled[0];
-  else if (event.key === 'End') target = enabled[enabled.length - 1];
-  if (target === undefined) return;
-  event.preventDefault();
-  const day = days.value[target];
-  if (!day) return;
-  chosenDate.value = day.date;
+// Keep the selected day visible in the strip, however it changed (click, keys, or the automatic jump).
+// No smooth behaviour, so reduced-motion users are unaffected.
+const strip = ref<HTMLElement | null>(null);
+watch(activeDate, async () => {
   await nextTick();
-  tabEls.value[target]?.focus();
+  strip.value?.querySelector<HTMLElement>('[role="tab"][data-state="active"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+});
+
+// ToggleGroup values are strings. "any" is the default, and clearing the group falls back to it.
+const staffValue = computed(() => (staffId.value === null ? 'any' : String(staffId.value)));
+
+function setStaff(value: unknown) {
+  const id = typeof value === 'string' && value !== 'any' ? Number(value) : null;
+  staffId.value = id !== null && props.result.staff.some((s) => s.id === id) ? id : null;
 }
 
-const chip =
-  'min-h-11 rounded-full border px-3 py-1.5 text-sm font-medium aria-pressed:border-slate-900 aria-pressed:bg-slate-900 aria-pressed:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50';
+function setDay(value: unknown) {
+  if (typeof value === 'string') chosenDate.value = value;
+}
+
+// 44 px tall on phones; the compact size from sm up.
+const touch = 'h-11 sm:h-9';
 </script>
 
 <template>
-  <div>
-    <div v-if="result.staff.length > 0" class="flex flex-wrap items-center gap-2" role="group" :aria-labelledby="`${uid}-staff`">
-      <span :id="`${uid}-staff`" class="text-sm font-medium text-slate-700">Staff</span>
-      <button type="button" :class="chip" :aria-pressed="staffId === null" @click="staffId = null">Any</button>
-      <button
-        v-for="s in result.staff"
-        :key="s.id"
-        type="button"
-        :class="chip"
-        :aria-pressed="staffId === s.id"
-        @click="staffId = s.id"
-      >
-        {{ s.name }}
-      </button>
-    </div>
-
-    <div class="-mx-1 mt-2 overflow-x-auto p-1">
-      <div role="tablist" aria-label="Day" class="flex gap-2">
-        <button
-          v-for="(d, i) in days"
-          :id="`${uid}-tab-${d.date}`"
+  <Tabs :model-value="activeDate ?? ''" class="flex-col gap-3" @update:model-value="setDay">
+    <!-- Below sm: one scrolling strip. From sm up the days wrap, so the viewport's inline table layout is made a block. -->
+    <div ref="strip">
+    <ScrollArea class="w-full sm:[&_[data-slot=scroll-area-viewport]>div]:block!">
+      <TabsList variant="line" aria-label="Day" class="h-auto! w-max gap-2 p-1 sm:w-full sm:flex-wrap sm:justify-start">
+        <TabsTrigger
+          v-for="d in days"
           :key="d.date"
-          :ref="(el) => { if (el) tabEls[i] = el as HTMLButtonElement; }"
-          type="button"
-          role="tab"
+          :value="d.date"
           :disabled="!d.enabled"
-          :aria-selected="d.date === activeDate"
-          :aria-controls="`${uid}-panel`"
-          :tabindex="d.date === activeDate ? 0 : -1"
-          class="min-h-11 min-w-20 shrink-0 rounded-md border px-3 py-1.5 text-center text-sm disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-600 aria-selected:border-slate-900 aria-selected:bg-slate-900 aria-selected:text-white border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
-          @click="chosenDate = d.date"
-          @keydown="onTabKey($event, i)"
+          class="h-auto min-h-11 min-w-20 flex-none flex-col gap-0 rounded-md border-border px-3 py-1.5 after:hidden data-[state=active]:border-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground group-data-[variant=line]/tabs-list:data-[state=active]:bg-primary"
         >
-          <span class="block font-medium">{{ formatWeekday(d.date) }}</span>
-          <span class="block">{{ formatDayMonth(d.date) }}</span>
-          <span v-if="!d.enabled" class="block text-xs">Closed / full</span>
-        </button>
-      </div>
+          <span class="font-medium">{{ formatWeekday(d.date) }}</span>
+          <span>{{ formatDayMonth(d.date) }}</span>
+          <span v-if="!d.enabled" class="sr-only">, Closed / full</span>
+        </TabsTrigger>
+      </TabsList>
+    </ScrollArea>
     </div>
 
-    <div
-      :id="`${uid}-panel`"
-      role="tabpanel"
-      tabindex="0"
-      :aria-labelledby="activeDate ? `${uid}-tab-${activeDate}` : undefined"
-      class="mt-3 space-y-3"
-    >
-      <p v-if="!activeDate" class="text-sm text-slate-600">No free times for this choice in these dates.</p>
+    <div v-if="result.staff.length > 1" class="flex flex-col items-start gap-1.5">
+      <span :id="`${uid}-staff`" class="text-sm font-medium text-foreground">Staff</span>
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        :spacing="2"
+        :model-value="staffValue"
+        :aria-labelledby="`${uid}-staff`"
+        class="flex-wrap"
+        @update:model-value="setStaff"
+      >
+        <ToggleGroupItem
+          value="any"
+          :class="[touch, 'rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground']"
+        >
+          Any
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          v-for="s in result.staff"
+          :key="s.id"
+          :value="String(s.id)"
+          :class="[touch, 'rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground']"
+        >
+          {{ s.name }}
+        </ToggleGroupItem>
+      </ToggleGroup>
+    </div>
+
+    <p v-if="!activeDate" class="text-sm text-muted-foreground">No free times for this choice in these dates.</p>
+    <TabsContent v-else :value="activeDate" class="flex flex-col gap-4">
       <section v-for="g in groups" :key="g.key" :aria-label="g.label">
-        <h4 class="text-sm font-medium text-slate-700">{{ g.label }}</h4>
-        <ul class="mt-1 flex flex-wrap gap-2">
+        <h4 class="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">{{ g.label }}</h4>
+        <ul class="grid grid-cols-4 gap-2 sm:grid-cols-6">
           <li v-for="slot in g.shown" :key="slot.start">
-            <button
+            <Button
               type="button"
-              class="min-h-11 min-w-16 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 hover:border-slate-900 hover:bg-slate-50"
+              variant="outline"
+              size="sm"
+              :aria-label="formatSlotLabel(slot, result.service.name, result.staff, staffId)"
+              :class="[touch, 'w-full min-w-0 px-2 tabular-nums']"
               @click="emit('select', { result, slot, staffId })"
             >
               {{ formatTime(slot.start) }}
-            </button>
+            </Button>
           </li>
         </ul>
-        <button
-          v-if="!g.open && g.hidden > 0"
-          type="button"
-          class="mt-1 inline-flex min-h-11 items-center text-sm font-medium text-slate-800 underline underline-offset-2"
-          @click="showAll(g.key)"
-        >
+        <Button v-if="!g.open && g.hidden > 0" type="button" variant="ghost" size="sm" :class="[touch, 'mt-1']" @click="showAll(g.key)">
           Show all ({{ g.all.length }})
-        </button>
+        </Button>
       </section>
-    </div>
-  </div>
+    </TabsContent>
+  </Tabs>
 </template>

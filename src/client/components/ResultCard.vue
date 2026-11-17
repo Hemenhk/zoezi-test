@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { Clock, MapPin } from '@lucide/vue';
 import type { SearchResult } from '@shared/schemas';
-import { formatDayTime, formatDistance, formatDuration, formatPrice } from '../lib/format';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { formatDayTime, formatDistance, formatDuration, formatPrice, formatSlotLabel } from '../lib/format';
 import SlotPicker, { type SlotSelection } from './SlotPicker.vue';
 
 const props = defineProps<{ result: SearchResult }>();
@@ -13,37 +18,43 @@ function bookNext() {
 </script>
 
 <template>
-  <article
-    class="rounded-lg border p-4"
-    :class="result.nextAvailable ? 'border-slate-200 bg-white' : 'border-slate-200 bg-slate-50 text-slate-600'"
-  >
-    <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
-      <div>
-        <h3 class="text-base font-semibold break-words" :class="result.nextAvailable ? 'text-slate-900' : 'text-slate-700'">
-          {{ result.venue.name }}
-        </h3>
-        <p class="text-sm">{{ result.service.name }}</p>
-      </div>
-      <p class="text-sm">
-        {{ formatDistance(result.distanceMeters) }}
-      </p>
-    </div>
-    <p class="mt-1 text-sm">
-      {{ formatDuration(result.service.durationMinutes) }} · <span class="font-medium">{{ formatPrice(result.service.priceSek) }}</span>
-    </p>
+  <!-- A muted card keeps foreground text: muted-foreground on muted is under 4.5:1. -->
+  <Card :class="result.nextAvailable ? undefined : 'bg-muted'">
+    <CardHeader>
+      <CardTitle role="heading" aria-level="3" class="break-words">{{ result.service.name }}</CardTitle>
+      <CardDescription :class="result.nextAvailable ? undefined : 'text-foreground'">{{ result.venue.name }}</CardDescription>
+      <CardAction class="text-right">
+        <p class="font-medium text-foreground">{{ formatPrice(result.service.priceSek) }}</p>
+        <p :class="result.nextAvailable ? 'text-muted-foreground' : 'text-foreground'">
+          {{ formatDuration(result.service.durationMinutes) }}
+        </p>
+      </CardAction>
+    </CardHeader>
 
-    <template v-if="result.nextAvailable">
-      <button
-        type="button"
-        class="mt-3 min-h-11 w-full rounded-md bg-slate-900 px-4 py-2.5 text-base font-semibold text-white hover:bg-slate-800 sm:w-auto"
-        @click="bookNext"
-      >
-        Next: {{ formatDayTime(result.nextAvailable.start) }}
-      </button>
-      <div class="mt-4 border-t border-slate-200 pt-3">
-        <SlotPicker :result="result" @select="emit('select', $event)" />
+    <CardContent class="flex flex-col gap-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <Badge variant="secondary">
+          <MapPin aria-hidden="true" />
+          {{ formatDistance(result.distanceMeters) }}
+        </Badge>
+        <Badge v-if="!result.nextAvailable" variant="outline" class="text-foreground">Fully booked</Badge>
       </div>
-    </template>
-    <p v-else class="mt-3 text-sm font-medium">No free times in these dates.</p>
-  </article>
+
+      <template v-if="result.nextAvailable">
+        <Button
+          type="button"
+          size="lg"
+          class="w-full sm:w-auto sm:self-start"
+          :aria-label="`Next available: ${formatSlotLabel(result.nextAvailable, result.service.name, result.staff, null)}`"
+          @click="bookNext"
+        >
+          <Clock aria-hidden="true" />
+          Next: {{ formatDayTime(result.nextAvailable.start) }}
+        </Button>
+        <Separator />
+        <SlotPicker :result="result" @select="emit('select', $event)" />
+      </template>
+      <p v-else class="text-sm font-medium text-foreground">No free times in these dates.</p>
+    </CardContent>
+  </Card>
 </template>

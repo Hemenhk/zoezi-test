@@ -8,7 +8,6 @@ export { default as InputGroupAddon } from './InputGroupAddon.vue'
 export { default as InputGroupButton } from './InputGroupButton.vue'
 export { default as InputGroupInput } from './InputGroupInput.vue'
 export { default as InputGroupText } from './InputGroupText.vue'
-export { default as InputGroupTextarea } from './InputGroupTextarea.vue'
 
 export const inputGroupAddonVariants = cva(
   'text-muted-foreground h-auto gap-2 py-1.5 text-sm font-medium group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*=size-])]:size-4 flex cursor-text items-center justify-center select-none',
