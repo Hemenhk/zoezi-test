@@ -6,7 +6,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
-    alias: { '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)) },
+    alias: {
+      '@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+      '@': fileURLToPath(new URL('./src/client', import.meta.url)),
+    },
   },
   test: {
     environment: 'node',

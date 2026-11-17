@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDayLabel, formatDayTime, formatDistance, formatTime, localHour } from './format';
+import { formatDateRange, formatDayLabel, formatDayTime, formatDistance, formatTime, localHour } from './format';
 
 // Expected values are worked out by hand. The suite runs under TZ=America/New_York.
 describe('client formatting', () => {
@@ -21,5 +21,11 @@ describe('client formatting', () => {
     expect(formatDistance(999)).toBe('999 m');
     expect(formatDistance(1000)).toBe('1.0 km');
     expect(formatDistance(1234)).toBe('1.2 km');
+  });
+
+  it('formats a date range for the summary bar', () => {
+    expect(formatDateRange('2026-10-23', '2026-10-29')).toBe('23–29 Oct');
+    expect(formatDateRange('2026-10-23', '2026-10-23')).toBe('23 Oct');
+    expect(formatDateRange('2026-10-28', '2026-11-03')).toBe('28 Oct – 3 Nov');
   });
 });

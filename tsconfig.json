@@ -14,7 +14,7 @@
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "jsx": "preserve",
-    "paths": { "@shared/*": ["./src/shared/*"] }
+    "paths": { "@shared/*": ["./src/shared/*"], "@/*": ["./src/client/*"] }
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts", "vitest.config.ts"]
 }

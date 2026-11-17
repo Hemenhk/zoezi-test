@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
+import AppHeader from './components/AppHeader.vue';
 </script>
 
 <template>
-  <header class="border-b border-slate-200 bg-white">
-    <div class="mx-auto flex max-w-4xl items-center px-4 py-3">
-      <RouterLink to="/" class="inline-flex min-h-11 items-center text-lg font-semibold text-slate-900">Booking</RouterLink>
-    </div>
-  </header>
-  <main class="mx-auto max-w-4xl px-4 py-6">
+  <AppHeader />
+  <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
     <RouterView />
   </main>
 </template>
